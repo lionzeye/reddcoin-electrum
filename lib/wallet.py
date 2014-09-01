@@ -38,8 +38,8 @@ import bitcoin
 from synchronizer import WalletSynchronizer
 from mnemonic import Mnemonic
 
-COINBASE_MATURITY = 100
-DUST_THRESHOLD = 5430
+COINBASE_MATURITY = 30
+DUST_THRESHOLD = 1000000
 
 # internal ID for imported account
 IMPORTED_ACCOUNT = '/x'

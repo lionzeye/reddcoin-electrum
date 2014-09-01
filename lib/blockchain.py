@@ -245,7 +245,7 @@ class Blockchain(threading.Thread):
         if chain is None:
             chain = []  # Do not use mutables as default values!
 
-        max_target = 0x00000000FFFF0000000000000000000000000000000000000000000000000000
+        max_target = 0x00000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         if index == 0: return 0x1d00ffff, max_target
 
         first = self.read_header((index-1)*2016)
