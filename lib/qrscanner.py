@@ -29,10 +29,10 @@ def scan_qr(config):
 
 def _find_system_cameras():
     device_root = "/sys/class/video4linux"
-    devices = {} # Name -> device
+    devices = {}  # Name -> device
     if os.path.exists(device_root):
         for device in os.listdir(device_root):
             name = open(os.path.join(device_root, device, 'name')).read()
             name = name.strip('\n')
-            devices[name] = os.path.join("/dev",device)
+            devices[name] = os.path.join("/dev", device)
     return devices

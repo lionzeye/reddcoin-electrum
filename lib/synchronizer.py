@@ -76,7 +76,7 @@ class WalletSynchronizer(threading.Thread):
             if history == ['*']: continue
             for tx_hash, tx_height in history:
                 if self.wallet.transactions.get(tx_hash) is None and (tx_hash, tx_height) not in missing_tx:
-                    missing_tx.append( (tx_hash, tx_height) )
+                    missing_tx.append((tx_hash, tx_height))
 
         if missing_tx:
             print_error("missing tx", missing_tx)
@@ -103,8 +103,8 @@ class WalletSynchronizer(threading.Thread):
             # request missing transactions
             for tx_hash, tx_height in missing_tx:
                 if (tx_hash, tx_height) not in requested_tx:
-                    self.network.send([ ('blockchain.transaction.get',[tx_hash, tx_height]) ], self.queue.put)
-                    requested_tx.append( (tx_hash, tx_height) )
+                    self.network.send([('blockchain.transaction.get', [tx_hash, tx_height])], self.queue.put)
+                    requested_tx.append((tx_hash, tx_height))
             missing_tx = []
 
             # detect if situation has changed
@@ -157,7 +157,7 @@ class WalletSynchronizer(threading.Thread):
                         tx_hash = item['tx_hash']
                         if tx_hash not in txids:
                             txids.append(tx_hash)
-                            hist.append( (tx_hash, item['height']) )
+                            hist.append((tx_hash, item['height']))
 
                     if len(hist) != len(result):
                         raise Exception("error: server sent history with non-unique txid", result)
@@ -165,7 +165,7 @@ class WalletSynchronizer(threading.Thread):
                     # check that the status corresponds to what was announced
                     rs = requested_histories.pop(addr)
                     if self.wallet.get_status(hist) != rs:
-                        raise Exception("error: status mismatch: %s"%addr)
+                        raise Exception("error: status mismatch: %s" % addr)
                 
                     # store received history
                     self.wallet.receive_history_callback(addr, hist)
@@ -174,7 +174,7 @@ class WalletSynchronizer(threading.Thread):
                     for tx_hash, tx_height in hist:
                         if self.wallet.transactions.get(tx_hash) is None:
                             if (tx_hash, tx_height) not in requested_tx and (tx_hash, tx_height) not in missing_tx:
-                                missing_tx.append( (tx_hash, tx_height) )
+                                missing_tx.append((tx_hash, tx_height))
 
             elif method == 'blockchain.transaction.get':
                 tx_hash = params[0]
@@ -183,15 +183,15 @@ class WalletSynchronizer(threading.Thread):
                 tx = Transaction.deserialize(result)
                 self.wallet.receive_tx_callback(tx_hash, tx, tx_height)
                 self.was_updated = True
-                requested_tx.remove( (tx_hash, tx_height) )
+                requested_tx.remove((tx_hash, tx_height))
                 print_error("received tx:", tx_hash, len(tx.raw))
 
             else:
-                print_error("Error: Unknown message:" + method + ", " + repr(params) + ", " + repr(result) )
+                print_error("Error: Unknown message:" + method + ", " + repr(params) + ", " + repr(result))
 
             if self.was_updated and not requested_tx:
                 self.network.trigger_callback('updated')
-                # Updated gets called too many times from other places as well; if we use that signal we get the notification three times
+                # Updated gets called too many times from other places as well.
+                # If we use that signal we get the notification three times.
                 self.network.trigger_callback("new_transaction") 
                 self.was_updated = False
-

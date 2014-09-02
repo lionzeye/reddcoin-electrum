@@ -22,8 +22,6 @@ from util import user_dir, appdata_dir, print_error
 from bitcoin import *
 
 
-
-
 class TxVerifier(threading.Thread):
     """ Simple Payment Verification """
 
@@ -32,13 +30,12 @@ class TxVerifier(threading.Thread):
         self.daemon = True
         self.storage = storage
         self.network = network
-        self.transactions    = {}                                 # requested verifications (with height sent by the requestor)
-        self.verified_tx     = storage.get('verified_tx3',{})      # height, timestamp of verified transactions
-        self.merkle_roots    = storage.get('merkle_roots',{})      # hashed by me
+        self.transactions = {}  # requested verifications (with height sent by the requester)
+        self.verified_tx = storage.get('verified_tx3', {})  # height, timestamp of verified transactions
+        self.merkle_roots = storage.get('merkle_roots', {})  # hashed by me
         self.lock = threading.Lock()
         self.running = False
         self.queue = Queue.Queue()
-
 
     def get_confirmations(self, tx):
         """ return the number of confirmations of a monitored transaction. """
@@ -58,9 +55,8 @@ class TxVerifier(threading.Thread):
 
         return conf, timestamp
 
-
     def get_txpos(self, tx_hash):
-        "return position, even if the tx is unverified"
+        """ return position, even if the tx is unverified. """
         with self.lock:
             x = self.verified_tx.get(tx_hash)
             y = self.transactions.get(tx_hash)
@@ -72,13 +68,11 @@ class TxVerifier(threading.Thread):
         else:
             return 1e12, 0
 
-
     def get_height(self, tx_hash):
         with self.lock:
             v = self.verified_tx.get(tx_hash)
         height = v[0] if v else None
         return height
-
 
     def add(self, tx_hash, tx_height):
         """ add a transaction to the list of monitored transactions. """
@@ -106,7 +100,7 @@ class TxVerifier(threading.Thread):
                     if tx_height > self.network.get_local_height():
                         continue
                     if self.merkle_roots.get(tx_hash) is None and tx_hash not in requested_merkle:
-                        if self.network.send([ ('blockchain.transaction.get_merkle',[tx_hash, tx_height]) ], self.queue.put):
+                        if self.network.send([('blockchain.transaction.get_merkle', [tx_hash, tx_height])], self.queue.put):
                             print_error('requesting merkle', tx_hash)
                             requested_merkle.append(tx_hash)
 
@@ -130,7 +124,6 @@ class TxVerifier(threading.Thread):
                 tx_hash = params[0]
                 self.verify_merkle(tx_hash, result)
 
-
     def verify_merkle(self, tx_hash, result):
         tx_height = result.get('block_height')
         pos = result.get('pos')
@@ -146,19 +139,16 @@ class TxVerifier(threading.Thread):
         timestamp = header.get('timestamp')
         with self.lock:
             self.verified_tx[tx_hash] = (tx_height, timestamp, pos)
-        print_error("verified %s"%tx_hash)
+        print_error("verified %s" % tx_hash)
         self.storage.put('verified_tx3', self.verified_tx, True)
         self.network.trigger_callback('updated')
-
 
     def hash_merkle_root(self, merkle_s, target_hash, pos):
         h = hash_decode(target_hash)
         for i in range(len(merkle_s)):
             item = merkle_s[i]
-            h = Hash( hash_decode(item) + h ) if ((pos >> i) & 1) else Hash( h + hash_decode(item) )
+            h = Hash( hash_decode(item) + h) if ((pos >> i) & 1) else Hash(h + hash_decode(item))
         return hash_encode(h)
-
-
 
     def undo_verifications(self, height):
         with self.lock:

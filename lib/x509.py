@@ -36,7 +36,6 @@ except ImportError:
     sys.exit("Error: tlslite does not seem to be installed. Try 'sudo pip install tlslite'")
 
 
-
 from pyasn1.codec.der import decoder, encoder
 from pyasn1.type.univ import Any, ObjectIdentifier, OctetString
 from pyasn1.type.char import BMPString, IA5String, UTF8String
@@ -53,8 +52,10 @@ SRV_NAME = ObjectIdentifier('1.3.6.1.5.5.7.8.7')
 ALGO_RSA_SHA1 = ObjectIdentifier('1.2.840.113549.1.1.5')
 ALGO_RSA_SHA256 = ObjectIdentifier('1.2.840.113549.1.1.11')
 
+
 class CertificateError(Exception):
     pass
+
 
 def decode_str(data):
     encoding = 'utf-16-be' if isinstance(data, BMPString) else 'utf-8'
@@ -104,8 +105,7 @@ class X509(tlslite.X509):
             if oid != SUBJECT_ALT_NAME:
                 continue
   
-            value = decoder.decode(extension.getComponentByName('extnValue'),
-                               asn1Spec=OctetString())[0]
+            value = decoder.decode(extension.getComponentByName('extnValue'), asn1Spec=OctetString())[0]
             sa_names = decoder.decode(value, asn1Spec=SubjectAltName())[0]
             for name in sa_names:
                 name_type = name.getName()
@@ -129,14 +129,12 @@ class X509(tlslite.X509):
                         results['SRV'].add(decode_str(value))
         return results
 
-
     def check_ca(self):
         for extension in self.extensions:
             oid = extension.getComponentByName('extnID')
             if oid != id_ce_basicConstraints:
                 continue
-            value = decoder.decode(extension.getComponentByName('extnValue'),
-                               asn1Spec=OctetString())[0]
+            value = decoder.decode(extension.getComponentByName('extnValue'), asn1Spec=OctetString())[0]
             constraints = decoder.decode(value, asn1Spec=BasicConstraints())[0]
             return bool(constraints[0])
 
@@ -147,7 +145,6 @@ class X509(tlslite.X509):
         s = encoder.encode(signature)
         return algorithm, s, data
 
-
     def extract_pubkey(self):
         pki = self.tbs.getComponentByName('subjectPublicKeyInfo')
         algo = pki.getComponentByName('algorithm')
@@ -155,7 +152,6 @@ class X509(tlslite.X509):
         parameters = algo.getComponentByName('parameters')
         subjectPublicKey = pki.getComponentByName('subjectPublicKey')
         return algorithm, parameters, encoder.encode(subjectPublicKey)
-
 
     def extract_dates(self):
         validity = self.tbs.getComponentByName('validity')
@@ -218,7 +214,7 @@ class X509(tlslite.X509):
         if cert_names['CN'] == expected:
             return True
         raise CertificateError(
-            'Could not match certficate against hostname: %s' % expected)
+            'Could not match certificate against hostname: %s' % expected)
 
 
 class X509CertChain(tlslite.X509CertChain):

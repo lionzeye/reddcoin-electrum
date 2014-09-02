@@ -32,7 +32,6 @@ from simple_config import SimpleConfig
 from daemon import NetworkServer, DAEMON_PORT
 
 
-
 class NetworkProxy(threading.Thread):
 
     def __init__(self, socket, config=None):
@@ -58,9 +57,9 @@ class NetworkProxy(threading.Thread):
             self.network = Network(config)
             self.pipe = util.QueuePipe(send_queue=self.network.requests_queue)
             self.network.start(self.pipe.get_queue)
-            for key in ['status','banner','updated','servers','interfaces']:
+            for key in ['status', 'banner', 'updated', 'servers', 'interfaces']:
                 value = self.network.get_status_value(key)
-                self.pipe.get_queue.put({'method':'network.status', 'params':[key, value]})
+                self.pipe.get_queue.put({'method': 'network.status', 'params': [key, value]})
 
         # status variables
         self.status = 'connecting'
@@ -116,18 +115,16 @@ class NetworkProxy(threading.Thread):
             method = response.get('method')
             params = response.get('params')
             with self.lock:
-                for k,v in self.subscriptions.items():
+                for k, v in self.subscriptions.items():
                     if (method, params) in v:
                         callback = k
                         break
                 else:
-                    print_error( "received unexpected notification", method, params)
+                    print_error("received unexpected notification", method, params)
                     return
 
-        
-        r = {'method':method, 'params':params, 'result':result, 'id':msg_id}
+        r = {'method': method, 'params': params, 'result': result, 'id': msg_id}
         callback(r)
-
 
     def send(self, messages, callback):
         """return the ids of the requests that we sent"""
@@ -151,7 +148,7 @@ class NetworkProxy(threading.Thread):
             ids = []
             for m in messages:
                 method, params = m 
-                request = { 'id':self.message_id, 'method':method, 'params':params }
+                request = {'id': self.message_id, 'method': method, 'params': params}
                 self.unanswered_requests[self.message_id] = method, params, callback
                 ids.append(self.message_id)
                 requests.append(request)
@@ -161,7 +158,6 @@ class NetworkProxy(threading.Thread):
 
             self.pipe.send_all(requests)
             return ids
-
 
     def synchronous_get(self, requests, timeout=100000000):
         queue = Queue.Queue()
@@ -181,7 +177,6 @@ class NetworkProxy(threading.Thread):
             out.append(res[_id])
         return out
 
-
     def get_servers(self):
         return self.servers
 
@@ -189,7 +184,7 @@ class NetworkProxy(threading.Thread):
         return self.interfaces
 
     def get_header(self, height):
-        return self.synchronous_get([('network.get_header',[height])])[0]
+        return self.synchronous_get([('network.get_header', [height])])[0]
 
     def get_local_height(self):
         return self.blockchain_height
@@ -207,16 +202,16 @@ class NetworkProxy(threading.Thread):
         return self.unanswered_requests == {}
 
     def get_parameters(self):
-        return self.synchronous_get([('network.get_parameters',[])])[0]
+        return self.synchronous_get([('network.get_parameters', [])])[0]
 
     def set_parameters(self, *args):
-        return self.synchronous_get([('network.set_parameters',args)])[0]
+        return self.synchronous_get([('network.set_parameters', args)])[0]
 
     def stop(self):
         self.running = False
 
     def stop_daemon(self):
-        return self.send([('daemon.stop',[])], None)
+        return self.send([('daemon.stop', [])], None)
 
     def register_callback(self, event, callback):
         with self.lock:
@@ -226,7 +221,6 @@ class NetworkProxy(threading.Thread):
 
     def trigger_callback(self, event):
         with self.lock:
-            callbacks = self.callbacks.get(event,[])[:]
+            callbacks = self.callbacks.get(event, [])[:]
         if callbacks:
             [callback() for callback in callbacks]
-

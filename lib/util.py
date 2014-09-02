@@ -22,16 +22,19 @@ def print_error(*args):
     if not is_verbose: return
     print_stderr(*args)
 
+
 def print_stderr(*args):
     args = [str(item) for item in args]
     sys.stderr.write(" ".join(args) + "\n")
     sys.stderr.flush()
+
 
 def print_msg(*args):
     # Stringify args
     args = [str(item) for item in args]
     sys.stdout.write(" ".join(args) + "\n")
     sys.stdout.flush()
+
 
 def print_json(obj):
     try:
@@ -40,6 +43,7 @@ def print_json(obj):
         s = repr(obj)
     sys.stdout.write(s + "\n")
     sys.stdout.flush()
+
 
 def user_dir():
     if "HOME" in os.environ:
@@ -54,6 +58,7 @@ def user_dir():
         #raise Exception("No home directory found in environment variables.")
         return
 
+
 def appdata_dir():
     """Find the path to the application data directory; add an electrum folder and return path."""
     if platform.system() == "Windows":
@@ -64,7 +69,7 @@ def appdata_dir():
           platform.system() == "DragonFly" or
           platform.system() == "OpenBSD" or
           platform.system() == "FreeBSD" or
-	  platform.system() == "NetBSD"):
+          platform.system() == "NetBSD"):
         return "/Library/Application Support/Electrum"
     else:
         raise Exception("Unknown system")
@@ -82,14 +87,14 @@ def local_data_dir():
     return local_data
 
 
-def format_satoshis(x, is_diff=False, num_zeros = 0, decimal_point = 8, whitespaces=False):
+def format_satoshis(x, is_diff=False, num_zeros=0, decimal_point=8, whitespaces=False):
     from decimal import Decimal
     s = Decimal(x)
     sign, digits, exp = s.as_tuple()
     digits = map(str, digits)
     while len(digits) < decimal_point + 1:
-        digits.insert(0,'0')
-    digits.insert(-decimal_point,'.')
+        digits.insert(0, '0')
+    digits.insert(-decimal_point, '.')
     s = ''.join(digits).rstrip('0')
     if sign:
         s = '-' + s
@@ -97,15 +102,15 @@ def format_satoshis(x, is_diff=False, num_zeros = 0, decimal_point = 8, whitespa
         s = "+" + s
 
     p = s.find('.')
-    s += "0"*( 1 + num_zeros - ( len(s) - p ))
+    s += "0"*(1 + num_zeros - (len(s) - p))
     if whitespaces:
-        s += " "*( 1 + decimal_point - ( len(s) - p ))
-        s = " "*( 13 - decimal_point - ( p )) + s
+        s += " "*(1 + decimal_point - (len(s) - p))
+        s = " "*(13 - decimal_point - p) + s
     return s
 
 
 # Takes a timestamp and returns a string with the approximation of the age
-def age(from_date, since_date = None, target_tz=None, include_seconds=False):
+def age(from_date, since_date=None, target_tz=None, include_seconds=False):
     if from_date is None:
         return "Unknown"
 
@@ -213,22 +218,20 @@ builtin_raw_input = __builtin__.raw_input
 __builtin__.raw_input = raw_input
 
 
-
 def parse_json(message):
     n = message.find('\n')
     if n==-1: 
         return None, message
     try:
-        j = json.loads( message[0:n] )
+        j = json.loads(message[0:n])
     except:
         j = None
     return j, message[n+1:]
 
 
-
-
 class timeout(Exception):
     pass
+
 
 import socket
 import errno
@@ -236,6 +239,7 @@ import json
 import ssl
 import traceback
 import time
+
 
 class SocketPipe:
 
@@ -308,8 +312,8 @@ class SocketPipe:
                     raise e
 
 
-
 import Queue
+
 
 class QueuePipe:
 
@@ -343,4 +347,3 @@ class QueuePipe:
     def send_all(self, requests):
         for request in requests:
             self.send(request)
-
