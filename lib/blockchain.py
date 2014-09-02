@@ -32,27 +32,23 @@ class Blockchain(threading.Thread):
         self.lock = threading.Lock()
         self.local_height = 0
         self.running = False
-        self.headers_url = 'http://headers.electrum.org/blockchain_headers'
+        self.headers_url = 'http://headers.reddwallet.com/blockchain_headers'
         self.set_local_height()
         self.queue = Queue.Queue()
 
-    
     def height(self):
         return self.local_height
-
 
     def stop(self):
         with self.lock: self.running = False
 
-
     def is_running(self):
         with self.lock: return self.running
-
 
     def run(self):
         self.init_headers_file()
         self.set_local_height()
-        print_error( "blocks:", self.local_height )
+        print_error("blocks:", self.local_height)
 
         with self.lock:
             self.running = True
@@ -80,7 +76,7 @@ class Blockchain(threading.Thread):
 
             if height > self.local_height:
                 # get missing parts from interface (until it connects to my chain)
-                chain = self.get_chain( i, header )
+                chain = self.get_chain(i, header)
 
                 # skip that server if the result is not consistent
                 if not chain: 
@@ -88,7 +84,7 @@ class Blockchain(threading.Thread):
                     continue
                 
                 # verify the chain
-                if self.verify_chain( chain ):
+                if self.verify_chain(chain):
                     print_error("height:", height, i.server)
                     for header in chain:
                         self.save_header(header)
@@ -97,12 +93,8 @@ class Blockchain(threading.Thread):
                     # todo: dismiss that server
                     continue
 
-
             self.network.new_blockchain_height(height, i)
 
-
-                    
-            
     def verify_chain(self, chain):
 
         first_header = chain[0]
@@ -118,15 +110,13 @@ class Blockchain(threading.Thread):
             try:
                 assert prev_hash == header.get('prev_block_hash')
                 assert bits == header.get('bits')
-                assert int('0x'+_hash,16) < target
+                assert int('0x'+_hash, 16) < target
             except Exception:
                 return False
 
             prev_header = header
 
         return True
-
-
 
     def verify_chunk(self, index, hexdata):
         data = hexdata.decode('hex')
@@ -149,25 +139,22 @@ class Blockchain(threading.Thread):
             _hash = self.hash_header(header)
             assert previous_hash == header.get('prev_block_hash')
             assert bits == header.get('bits')
-            assert int('0x'+_hash,16) < target
+            assert int('0x'+_hash, 16) < target
 
             previous_header = header
             previous_hash = _hash 
 
         self.save_chunk(index, data)
-        print_error("validated chunk %d"%height)
-
-        
+        print_error("validated chunk %d" % height)
 
     def header_to_string(self, res):
-        s = int_to_hex(res.get('version'),4) \
+        s = int_to_hex(res.get('version'), 4) \
             + rev_hex(res.get('prev_block_hash')) \
             + rev_hex(res.get('merkle_root')) \
-            + int_to_hex(int(res.get('timestamp')),4) \
-            + int_to_hex(int(res.get('bits')),4) \
-            + int_to_hex(int(res.get('nonce')),4)
+            + int_to_hex(int(res.get('timestamp')), 4) \
+            + int_to_hex(int(res.get('bits')), 4) \
+            + int_to_hex(int(res.get('nonce')), 4)
         return s
-
 
     def header_from_string(self, s):
         hex_to_int = lambda s: int('0x' + s[::-1].encode('hex'), 16)
@@ -184,7 +171,7 @@ class Blockchain(threading.Thread):
         return rev_hex(Hash(self.header_to_string(header).decode('hex')).encode('hex'))
 
     def path(self):
-        return os.path.join( self.config.path, 'blockchain_headers')
+        return os.path.join(self.config.path, 'blockchain_headers')
 
     def init_headers_file(self):
         filename = self.path()
@@ -194,16 +181,16 @@ class Blockchain(threading.Thread):
         try:
             import urllib, socket
             socket.setdefaulttimeout(30)
-            print_error("downloading ", self.headers_url )
+            print_error("downloading ", self.headers_url)
             urllib.urlretrieve(self.headers_url, filename)
             print_error("done.")
         except Exception:
-            print_error( "download failed. creating file", filename )
-            open(filename,'wb+').close()
+            print_error("download failed. creating file", filename)
+            open(filename, 'wb+').close()
 
     def save_chunk(self, index, chunk):
         filename = self.path()
-        f = open(filename,'rb+')
+        f = open(filename, 'rb+')
         f.seek(index*2016*80)
         h = f.write(chunk)
         f.close()
@@ -214,12 +201,11 @@ class Blockchain(threading.Thread):
         assert len(data) == 80
         height = header.get('block_height')
         filename = self.path()
-        f = open(filename,'rb+')
+        f = open(filename, 'rb+')
         f.seek(height*80)
         h = f.write(data)
         f.close()
         self.set_local_height()
-
 
     def set_local_height(self):
         name = self.path()
@@ -228,18 +214,16 @@ class Blockchain(threading.Thread):
             if self.local_height != h:
                 self.local_height = h
 
-
     def read_header(self, block_height):
         name = self.path()
         if os.path.exists(name):
-            f = open(name,'rb')
+            f = open(name, 'rb')
             f.seek(block_height*80)
             h = f.read(80)
             f.close()
             if len(h) == 80:
                 h = self.header_from_string(h)
                 return h 
-
 
     def get_target(self, index, chain=None):
         if chain is None:
@@ -263,22 +247,22 @@ class Blockchain(threading.Thread):
         bits = last.get('bits') 
         # convert to bignum
         MM = 256*256*256
-        a = bits%MM
+        a = bits % MM
         if a < 0x8000:
             a *= 256
-        target = (a) * pow(2, 8 * (bits/MM - 3))
+        target = a * pow(2, 8 * (bits/MM - 3))
 
         # new target
-        new_target = min( max_target, (target * nActualTimespan)/nTargetTimespan )
+        new_target = min(max_target, (target * nActualTimespan)/nTargetTimespan)
         
         # convert it to bits
-        c = ("%064X"%new_target)[2:]
+        c = ("%064X" % new_target)[2:]
         i = 31
         while c[0:2]=="00":
             c = c[2:]
             i -= 1
 
-        c = int('0x'+c[0:6],16)
+        c = int('0x'+c[0:6], 16)
         if c >= 0x800000: 
             c /= 256
             i += 1
@@ -286,10 +270,9 @@ class Blockchain(threading.Thread):
         new_bits = c + MM * i
         return new_bits, new_target
 
-
     def request_header(self, i, h, queue):
-        print_error("requesting header %d from %s"%(h, i.server))
-        i.send_request({'method':'blockchain.block.get_header', 'params':[h]}, queue)
+        print_error("requesting header %d from %s" % (h, i.server))
+        i.send_request({'method': 'blockchain.block.get_header', 'params': [h]}, queue)
 
     def retrieve_request(self, queue):
         while True:
@@ -305,7 +288,7 @@ class Blockchain(threading.Thread):
     def get_chain(self, interface, final_header):
 
         header = final_header
-        chain = [ final_header ]
+        chain = [final_header]
         requested_header = False
         queue = Queue.Queue()
 
@@ -314,7 +297,7 @@ class Blockchain(threading.Thread):
             if requested_header:
                 header = self.retrieve_request(queue)
                 if not header: return
-                chain = [ header ] + chain
+                chain = [header] + chain
                 requested_header = False
 
             height = header.get('block_height')
@@ -336,7 +319,6 @@ class Blockchain(threading.Thread):
                 # the chain is complete
                 return chain
 
-
     def get_and_verify_chunks(self, i, header, height):
 
         queue = Queue.Queue()
@@ -344,17 +326,16 @@ class Blockchain(threading.Thread):
         max_index = (height + 1)/2016
         n = min_index
         while n < max_index + 1:
-            print_error( "Requesting chunk:", n )
-            i.send_request({'method':'blockchain.block.get_chunk', 'params':[n]}, queue)
+            print_error("Requesting chunk:", n)
+            i.send_request({'method': 'blockchain.block.get_chunk', 'params': [n]}, queue)
             r = self.retrieve_request(queue)
             try:
                 self.verify_chunk(n, r)
-                n = n + 1
+                n += 1
             except Exception:
                 print_error('Verify chunk failed!')
-                n = n - 1
+                n -= 1
                 if n < 0:
                     return False
 
         return True
-
