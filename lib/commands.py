@@ -27,7 +27,7 @@ from transaction import Transaction
 
 
 class Command:
-    def __init__(self, name, min_args, max_args, requires_network, requires_wallet, requires_password, description, syntax = '', options_syntax = ''):
+    def __init__(self, name, min_args, max_args, requires_network, requires_wallet, requires_password, description, syntax='', options_syntax=''):
         self.name = name
         self.min_args=min_args
         self.max_args = max_args
@@ -46,7 +46,6 @@ def register_command(*args):
     global known_commands
     name = args[0]
     known_commands[name] = Command(*args)
-
 
 
 payto_options = ' --fee, -f: set transaction fee\n --fromaddr, -F: send from address -\n --changeaddr, -c: send change to address'
@@ -123,7 +122,7 @@ class Commands:
     def _run(self, method, args, password_getter):
         cmd = known_commands[method]
         if cmd.requires_password and self.wallet.use_encryption:
-            self.password = apply(password_getter,())
+            self.password = apply(password_getter, ())
         f = getattr(self, method)
         result = f(*args)
         self.password = None
@@ -141,7 +140,7 @@ class Commands:
         return Mnemonic(language).check_seed(seed, custom_entropy)
 
     def getaddresshistory(self, addr):
-        return self.network.synchronous_get([ ('blockchain.address.get_history',[addr]) ])[0]
+        return self.network.synchronous_get([('blockchain.address.get_history', [addr])])[0]
 
     def listunspent(self):
         l = copy.deepcopy(self.wallet.get_unspent_coins())
@@ -149,18 +148,18 @@ class Commands:
         return l
 
     def getaddressunspent(self, addr):
-        return self.network.synchronous_get([ ('blockchain.address.listunspent',[addr]) ])[0]
+        return self.network.synchronous_get([('blockchain.address.listunspent', [addr])])[0]
 
     def getutxoaddress(self, txid, num):
-        r = self.network.synchronous_get([ ('blockchain.utxo.get_address',[txid, num]) ])
+        r = self.network.synchronous_get([('blockchain.utxo.get_address', [txid, num])])
         if r:
-            return {'address':r[0] }
+            return {'address': r[0]}
 
     def createrawtransaction(self, inputs, outputs):
         for i in inputs:
             i['prevout_hash'] = i['txid']
             i['prevout_n'] = i['vout']
-        outputs = map(lambda x: (x[0],int(1e8*x[1])), outputs.items())
+        outputs = map(lambda x: (x[0], int(1e8*x[1])), outputs.items())
         tx = Transaction(inputs, outputs)
         return tx
 
@@ -171,7 +170,7 @@ class Commands:
 
     def decoderawtransaction(self, raw):
         tx = Transaction.deserialize(raw)
-        return {'inputs':tx.inputs, 'outputs':tx.outputs}
+        return {'inputs': tx.inputs, 'outputs': tx.outputs}
 
     def sendrawtransaction(self, raw):
         tx = Transaction.deserialize(raw)
@@ -181,54 +180,54 @@ class Commands:
         assert isinstance(pubkeys, list)
         redeem_script = Transaction.multisig_script(pubkeys, num)
         address = hash_160_to_bc_address(hash_160(redeem_script.decode('hex')), 5)
-        return {'address':address, 'redeemScript':redeem_script}
+        return {'address': address, 'redeemScript': redeem_script}
 
-    def freeze(self,addr):
+    def freeze(self, addr):
         return self.wallet.freeze(addr)
 
-    def unfreeze(self,addr):
+    def unfreeze(self, addr):
         return self.wallet.unfreeze(addr)
 
     def getprivatekeys(self, addr):
         return self.wallet.get_private_key(addr, self.password)
 
-    def dumpprivkeys(self, addresses = None):
+    def dumpprivkeys(self, addresses=None):
         if addresses is None:
             addresses = self.wallet.addresses(True)
         return [self.wallet.get_private_key(address, self.password) for address in addresses]
 
     def validateaddress(self, addr):
         isvalid = is_valid(addr)
-        out = { 'isvalid':isvalid }
+        out = {'isvalid': isvalid}
         if isvalid:
             out['address'] = addr
         return out
 
     def getpubkeys(self, addr):
-        out = { 'address':addr }
+        out = {'address': addr}
         out['pubkeys'] = self.wallet.get_public_keys(addr)
         return out
 
-    def getbalance(self, account= None):
+    def getbalance(self, account=None):
         if account is None:
             c, u = self.wallet.get_balance()
         else:
             c, u = self.wallet.get_account_balance(account)
 
-        out = { "confirmed": str(Decimal(c)/100000000) }
+        out = {"confirmed": str(Decimal(c)/100000000)}
         if u: out["unconfirmed"] = str(Decimal(u)/100000000)
         return out
 
     def getaddressbalance(self, addr):
-        out = self.network.synchronous_get([ ('blockchain.address.get_balance',[addr]) ])[0]
-        out["confirmed"] =  str(Decimal(out["confirmed"])/100000000)
-        out["unconfirmed"] =  str(Decimal(out["unconfirmed"])/100000000)
+        out = self.network.synchronous_get([('blockchain.address.get_balance', [addr])])[0]
+        out["confirmed"] = str(Decimal(out["confirmed"])/100000000)
+        out["unconfirmed"] = str(Decimal(out["unconfirmed"])/100000000)
         return out
 
     def getproof(self, addr):
-        p = self.network.synchronous_get([ ('blockchain.address.get_proof',[addr]) ])[0]
+        p = self.network.synchronous_get([('blockchain.address.get_proof', [addr])])[0]
         out = []
-        for i,s in p:
+        for i, s in p:
             out.append(i)
         return out
 
@@ -238,7 +237,7 @@ class Commands:
         return self.network.get_servers()
 
     def getversion(self):
-        import electrum  # Needs to stay here to prevent ciruclar imports
+        import electrum  # Needs to stay here to prevent circular imports
         return electrum.ELECTRUM_VERSION
 
     def getmpk(self):
@@ -246,17 +245,17 @@ class Commands:
 
     def getseed(self):
         mnemonic = self.wallet.get_mnemonic(self.password)
-        return { 'mnemonic':mnemonic, 'version':self.wallet.seed_version }
+        return {'mnemonic': mnemonic, 'version': self.wallet.seed_version}
 
     def importprivkey(self, sec):
         try:
-            addr = self.wallet.import_key(sec,self.password)
+            addr = self.wallet.import_key(sec, self.password)
             out = "Keypair imported: ", addr
         except Exception as e:
             out = "Error: Keypair import failed: " + str(e)
         return out
 
-    def sweep(self, privkey, to_address, fee = 0.0001):
+    def sweep(self, privkey, to_address, fee=0.0001):
         fee = int(Decimal(fee)*100000000)
         return Transaction.sweep([privkey], self.network, to_address, fee)
 
@@ -266,7 +265,7 @@ class Commands:
     def verifymessage(self, address, signature, message):
         return bitcoin.verify_message(address, signature, message)
 
-    def _mktx(self, outputs, fee = None, change_addr = None, domain = None):
+    def _mktx(self, outputs, fee=None, change_addr=None, domain=None):
         for to_address, amount in outputs:
             if not is_valid(to_address):
                 raise Exception("Invalid Reddcoin address", to_address)
@@ -299,24 +298,24 @@ class Commands:
             final_outputs.append(('address', to_address, amount))
 
         if fee: fee = int(100000000*fee)
-        return self.wallet.mktx(final_outputs, self.password, fee , change_addr, domain)
+        return self.wallet.mktx(final_outputs, self.password, fee, change_addr, domain)
 
-    def mktx(self, to_address, amount, fee = None, change_addr = None, domain = None):
+    def mktx(self, to_address, amount, fee=None, change_addr=None, domain=None):
         tx = self._mktx([(to_address, amount)], fee, change_addr, domain)
         return tx
 
-    def mksendmanytx(self, outputs, fee = None, change_addr = None, domain = None):
+    def mksendmanytx(self, outputs, fee=None, change_addr=None, domain=None):
         tx = self._mktx(outputs, fee, change_addr, domain)
         return tx
 
-    def payto(self, to_address, amount, fee = None, change_addr = None, domain = None):
+    def payto(self, to_address, amount, fee=None, change_addr=None, domain=None):
         tx = self._mktx([(to_address, amount)], fee, change_addr, domain)
-        r, h = self.wallet.sendtx( tx )
+        r, h = self.wallet.sendtx(tx)
         return h
 
-    def paytomany(self, outputs, fee = None, change_addr = None, domain = None):
+    def paytomany(self, outputs, fee=None, change_addr=None, domain=None):
         tx = self._mktx(outputs, fee, change_addr, domain)
-        r, h = self.wallet.sendtx( tx )
+        r, h = self.wallet.sendtx(tx)
         return h
 
     def history(self):
@@ -325,13 +324,14 @@ class Commands:
         for item in self.wallet.get_tx_history():
             tx_hash, conf, is_mine, value, fee, balance, timestamp = item
             try:
-                time_str = datetime.datetime.fromtimestamp( timestamp).isoformat(' ')[:-3]
+                time_str = datetime.datetime.fromtimestamp(timestamp).isoformat(' ')[:-3]
             except Exception:
                 time_str = "----"
 
             label, is_default_label = self.wallet.get_label(tx_hash)
 
-            out.append({'txid':tx_hash, 'date':"%16s"%time_str, 'label':label, 'value':format_satoshis(value), 'confirmations':conf})
+            out.append({'txid': tx_hash, 'date': "%16s" % time_str, 'label': label,
+                        'value': format_satoshis(value), 'confirmations': conf})
         return out
 
     def setlabel(self, key, label):
@@ -343,19 +343,19 @@ class Commands:
             c[addr] = self.wallet.labels.get(addr)
         return c
 
-    def listaddresses(self, show_all = False, show_label = False):
+    def listaddresses(self, show_all=False, show_label=False):
         out = []
         for addr in self.wallet.addresses(True):
             if show_all or not self.wallet.is_change(addr):
                 if show_label:
-                    item = { 'address': addr }
+                    item = {'address': addr}
                     if show_label:
-                        label = self.wallet.labels.get(addr,'')
+                        label = self.wallet.labels.get(addr, '')
                         if label:
                             item['label'] = label
                 else:
                     item = addr
-                out.append( item )
+                out.append(item)
         return out
 
     def help(self, cmd=None):
@@ -374,7 +374,7 @@ class Commands:
             if tx:
                 return tx
 
-        raw = self.network.synchronous_get([ ('blockchain.transaction.get',[tx_hash]) ])[0]
+        raw = self.network.synchronous_get([('blockchain.transaction.get', [tx_hash])])[0]
         if raw:
             return Transaction.deserialize(raw)
         else:
