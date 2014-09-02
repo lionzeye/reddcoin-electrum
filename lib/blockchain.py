@@ -229,8 +229,12 @@ class Blockchain(threading.Thread):
         if chain is None:
             chain = []  # Do not use mutables as default values!
 
-        max_target = 0x00000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-        if index == 0: return 0x1d00ffff, max_target
+        max_target     = 0x00000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        genesis_target = 0x00000FFFF0000000000000000000000000000000000000000000000000000000
+        max_nbits      = 0x1e0fffff
+        genesis_nbits  = 0x1e0ffff0
+
+        if index == 0: return genesis_nbits, genesis_target
 
         first = self.read_header((index-1)*2016)
         last = self.read_header(index*2016-1)
@@ -301,7 +305,7 @@ class Blockchain(threading.Thread):
                 requested_header = False
 
             height = header.get('block_height')
-            previous_header = self.read_header(height -1)
+            previous_header = self.read_header(height - 1)
             if not previous_header:
                 self.request_header(interface, height - 1, queue)
                 requested_header = True
