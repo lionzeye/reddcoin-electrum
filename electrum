@@ -50,7 +50,6 @@ from electrum.daemon import get_daemon
 from electrum.plugins import init_plugins
 
 
-
 # get password routine
 def prompt_password(prompt, confirm=True):
     import getpass
@@ -137,18 +136,15 @@ def run_command(cmd, password=None, args=None):
         traceback.print_exc(file=sys.stdout)
         sys.exit(1)
 
-
     if cmd.requires_network and not options.offline:
         if wallet:
             wallet.stop_threads()
         network.stop()
 
-
     if type(result) == str:
         print_msg(result)
     elif result is not None:
         print_json(result)
-
 
 
 if __name__ == '__main__':
@@ -181,7 +177,7 @@ if __name__ == '__main__':
     if len(args) == 0:
         url = None
         cmd = 'gui'
-    elif len(args) == 1 and re.match('^bitcoin:', args[0]):
+    elif len(args) == 1 and re.match('^reddcoin:', args[0]):
         url = args[0]
         cmd = 'gui'
     else:
@@ -226,10 +222,10 @@ if __name__ == '__main__':
         if arg == 'start':
             if s:
                 print_msg("Daemon already running")
-                sys.exit(1) 
+                sys.exit(1)
             get_daemon(config, True)
             sys.exit(0)
-        elif arg in ['status','stop']:
+        elif arg in ['status', 'stop']:
             if not s:
                 print_msg("Daemon not running")
                 sys.exit(1)
@@ -251,13 +247,12 @@ if __name__ == '__main__':
             print "unknown command \"%s\""% arg
         sys.exit(0)
 
-
     if cmd not in known_commands:
         cmd = 'help'
 
     cmd = known_commands[cmd]
 
-    # instanciate wallet for command-line
+    # instantiate wallet for command-line
     storage = WalletStorage(config)
 
     if cmd.name in ['create', 'restore']:
@@ -328,24 +323,20 @@ if __name__ == '__main__':
                 print_msg("Please store it on paper. ")
                 print_msg("Open this file on your online computer to complete your wallet creation.")
 
-
         print_msg("Wallet saved in '%s'" % wallet.storage.path)
 
         # terminate
         sys.exit(0)
-
 
     if cmd.name not in ['create', 'restore'] and cmd.requires_wallet and not storage.file_exists:
         print_msg("Error: Wallet file not found.")
         print_msg("Type 'electrum create' to create a new wallet, or provide a path to a wallet with the -w option")
         sys.exit(0)
 
-
     if cmd.requires_wallet:
         wallet = Wallet(storage)
     else:
         wallet = None
-
 
     # important warning
     if cmd.name in ['dumpprivkey', 'dumpprivkeys']:
@@ -382,7 +373,7 @@ if __name__ == '__main__':
             args.append(prompt_password('Enter PrivateKey (will not echo):', False))
 
     elif cmd.name == 'signrawtransaction':
-        args = [cmd, args[1], json.loads(args[2]) if len(args) > 2 else [] ]
+        args = [cmd, args[1], json.loads(args[2]) if len(args) > 2 else []]
 
     elif cmd.name == 'createmultisig':
         args = [cmd, int(args[1]), json.loads(args[2])]
@@ -421,7 +412,7 @@ if __name__ == '__main__':
         print_msg("Syntax:", cmd.syntax)
         sys.exit(1)
 
-    if cmd.max_args >= 0 and len(args) - 1 > cmd.max_args:
+    if len(args) - 1 > cmd.max_args >= 0:
         print_msg("too many arguments", args)
         print_msg("Syntax:", cmd.syntax)
         sys.exit(1)
@@ -434,7 +425,6 @@ if __name__ == '__main__':
 
     if cmd.name == 'check_seed':
         args.append(long(options.entropy))
-
 
     # run the command
     if cmd.name == 'deseed':

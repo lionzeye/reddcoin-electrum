@@ -121,10 +121,10 @@ setup(
         'electrum_plugins.qrscanner',
         'electrum_plugins.virtualkeyboard',
     ],
-    description="Lightweight Bitcoin Wallet",
+    description="Lightweight Reddcoin Wallet",
     author="Thomas Voegtlin",
     author_email="thomasv1@gmx.de",
     license="GNU GPLv3",
     url="https://electrum.org",
-    long_description="""Lightweight Bitcoin Wallet"""
+    long_description="""Lightweight Reddcoin Wallet"""
 )

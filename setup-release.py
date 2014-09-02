@@ -80,7 +80,7 @@ if sys.platform == 'darwin':
             qt_menu_location = os.popen("find /opt/local -name qt_menu.nib | tail -n 1").read()
         qt_menu_location = re.sub('\n', '', qt_menu_location)
 
-    if (len(qt_menu_location) == 0):
+    if len(qt_menu_location) == 0:
         print "Sorry couldn't find your qt_menu.nib this probably won't work"
     else:
         print "Found your qib: " + qt_menu_location
