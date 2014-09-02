@@ -11,6 +11,6 @@ except Exception:
 
 n = NetworkProxy()
 n.start(start_daemon=True)
-h = n.synchronous_get([ ('blockchain.address.get_history',[addr]) ])[0]
+h = n.synchronous_get([('blockchain.address.get_history', [addr])])[0]
 print_json(h)
 

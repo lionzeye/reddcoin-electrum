@@ -12,8 +12,8 @@ except Exception:
 
 # start network
 c = electrum.SimpleConfig()
-s = electrum.daemon.get_daemon(c,True)
-network = electrum.NetworkProxy(s,c)
+s = electrum.daemon.get_daemon(c, True)
+network = electrum.NetworkProxy(s, c)
 network.start()
 
 # wait until connected
@@ -26,9 +26,8 @@ if not network.is_connected():
 
 # 2. send the subscription
 callback = lambda response: electrum.print_json(response.get('result'))
-network.send([('blockchain.address.subscribe',[addr])], callback)
+network.send([('blockchain.address.subscribe', [addr])], callback)
 
 # 3. wait for results
 while network.is_connected():
     time.sleep(1)
-

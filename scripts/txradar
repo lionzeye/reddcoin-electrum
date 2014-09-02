@@ -12,7 +12,7 @@ except:
     sys.exit(1)
 
 # 1. start interface and wait for connection
-interface = electrum.Interface('ecdsa.net:50002:s')
+interface = electrum.Interface('reddwallet.com:50002:s')
 interface.start(wait = True)
 if not interface.is_connected:
     print "not connected"
@@ -20,15 +20,15 @@ if not interface.is_connected:
 
 # 2. get list of peers
 q = Queue.Queue()
-interface.send([('server.peers.subscribe',[])], lambda i,x: q.put(x))
+interface.send([('server.peers.subscribe', [])], lambda i, x: q.put(x))
 r = q.get(timeout=10000)
 peers = parse_servers(r.get('result'))
-peers = filter_protocol(peers,'s')
+peers = filter_protocol(peers, 's')
 
-print "Contacting %d servers"%len(peers)
+print "Contacting %d servers" % len(peers)
 # start interfaces
 config = SimpleConfig()
-interfaces = map ( lambda server: Interface(server, config), peers )
+interfaces = map(lambda server: Interface(server, config), peers)
 results_queue = Queue.Queue()
 reached_servers = []
 for i in interfaces: i.start(q)
@@ -45,7 +45,7 @@ while peers:
             continue
     peers.remove(i.server)
     if i.is_connected:
-        i.send([('blockchain.transaction.get',[tx])], lambda i,x: results_queue.put((i,x)))
+        i.send([('blockchain.transaction.get', [tx])], lambda i, x: results_queue.put((i, x)))
         reached_servers.append(i.server)
     else:
         print "Connection failed:", i.server

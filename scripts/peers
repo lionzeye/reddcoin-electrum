@@ -8,7 +8,7 @@ from collections import defaultdict
 # electrum.util.set_verbosity(1)
 
 # 1. start interface and wait for connection
-interface = electrum.Interface('ecdsa.net:110:s')
+interface = electrum.Interface('reddwallet.com:110:s')
 q = Queue.Queue()
 interface.start(q)
 
@@ -18,17 +18,17 @@ if not interface.is_connected:
     exit(1)
 
 # 2. get list of peers
-interface.send_request({'id':0, 'method':'server.peers.subscribe','params':[]})
+interface.send_request({'id': 0, 'method': 'server.peers.subscribe', 'params': []})
 i, r = q.get(timeout=10000)
 peers = parse_servers(r.get('result'))
-peers = filter_protocol(peers,'s')
+peers = filter_protocol(peers, 's')
 i.stop()
 
-print "Contacting %d servers"%len(peers)
+print "Contacting %d servers" % len(peers)
 # start interfaces
 q2 = Queue.Queue()
 config = SimpleConfig()
-interfaces = map ( lambda server: Interface(server, config), peers )
+interfaces = map(lambda server: Interface(server, config), peers)
 reached_servers = []
 for i in interfaces:
     i.start(q2)
@@ -51,6 +51,7 @@ while peers:
         print "Connection failed:", i.server
 
 print "%d servers could be reached"%len(reached_servers)
+
 
 def analyze(results):
     out = {}
@@ -84,7 +85,7 @@ def analyze(results):
 
 results_queue = Queue.Queue()
 for i in reached_servers:
-    i.send_request({'method':'blockchain.headers.subscribe','params':[]}, results_queue)
+    i.send_request({'method': 'blockchain.headers.subscribe', 'params': []}, results_queue)
 
 results = {}
 t0 = time.time()
@@ -102,12 +103,9 @@ while reached_servers:
 
 for i in reached_servers:
     print i.server, "did not answer"
-print "%d answers"%len(results)
+print "%d answers" % len(results)
 
 errors = analyze(results).keys()
 
-for n,v in sorted(results.items(), key=lambda x:x[1]['block_height']):
-    print "%40s"%n, v['block_height'], v['utxo_root'], "error" if n in errors else "ok"
-
-
-
+for n, v in sorted(results.items(), key=lambda x: x[1]['block_height']):
+    print "%40s" % n, v['block_height'], v['utxo_root'], "error" if n in errors else "ok"
