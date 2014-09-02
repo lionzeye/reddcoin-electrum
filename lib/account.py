@@ -25,14 +25,14 @@ from util import print_msg
 
 class Account(object):
     def __init__(self, v):
-        self.receiving_pubkeys   = v.get('receiving', [])
-        self.change_pubkeys      = v.get('change', [])
+        self.receiving_pubkeys = v.get('receiving', [])
+        self.change_pubkeys = v.get('change', [])
         # addresses will not be stored on disk
         self.receiving_addresses = map(self.pubkeys_to_address, self.receiving_pubkeys)
-        self.change_addresses    = map(self.pubkeys_to_address, self.change_pubkeys)
+        self.change_addresses = map(self.pubkeys_to_address, self.change_pubkeys)
 
     def dump(self):
-        return {'receiving':self.receiving_pubkeys, 'change':self.change_pubkeys}
+        return {'receiving': self.receiving_pubkeys, 'change': self.change_pubkeys}
 
     def get_pubkey(self, for_change, n):
         pubkeys_list = self.change_pubkeys if for_change else self.receiving_pubkeys
@@ -43,7 +43,7 @@ class Account(object):
         return addr_list[n]
 
     def get_pubkeys(self, for_change, n):
-        return [ self.get_pubkey(for_change, n)]
+        return [self.get_pubkey(for_change, n)]
 
     def get_addresses(self, for_change):
         addr_list = self.change_addresses if for_change else self.receiving_addresses
@@ -87,13 +87,14 @@ class PendingAccount(Account):
         return False
 
     def dump(self):
-        return {'pending':self.pending_address }
+        return {'pending': self.pending_address}
 
     def get_name(self, k):
         return _('Pending account')
 
     def get_master_pubkeys(self):
         return []
+
 
 class ImportedAccount(Account):
     def __init__(self, d):
@@ -126,17 +127,16 @@ class ImportedAccount(Account):
 
     def add(self, address, pubkey, privkey, password):
         from wallet import pw_encode
-        self.keypairs[address] = (pubkey, pw_encode(privkey, password ))
+        self.keypairs[address] = (pubkey, pw_encode(privkey, password))
 
     def remove(self, address):
         self.keypairs.pop(address)
 
     def dump(self):
-        return {'imported':self.keypairs}
+        return {'imported': self.keypairs}
 
     def get_name(self, k):
         return _('Imported keys')
-
 
     def update_password(self, old_password, new_password):
         for k, v in self.keypairs.items():
@@ -153,38 +153,37 @@ class OldAccount(Account):
         Account.__init__(self, v)
         self.mpk = v['mpk'].decode('hex')
 
-
     @classmethod
-    def mpk_from_seed(klass, seed):
+    def mpk_from_seed(cls, seed):
         curve = SECP256k1
-        secexp = klass.stretch_key(seed)
-        master_private_key = ecdsa.SigningKey.from_secret_exponent( secexp, curve = SECP256k1 )
+        secexp = cls.stretch_key(seed)
+        master_private_key = ecdsa.SigningKey.from_secret_exponent(secexp, curve=SECP256k1)
         master_public_key = master_private_key.get_verifying_key().to_string().encode('hex')
         return master_public_key
 
     @classmethod
-    def stretch_key(self,seed):
+    def stretch_key(cls, seed):
         oldseed = seed
         for i in range(100000):
             seed = hashlib.sha256(seed + oldseed).digest()
-        return string_to_number( seed )
+        return string_to_number(seed)
 
     @classmethod
-    def get_sequence(self, mpk, for_change, n):
-        return string_to_number( Hash( "%d:%d:"%(n,for_change) + mpk ) )
+    def get_sequence(cls, mpk, for_change, n):
+        return string_to_number(Hash("%d:%d:" % (n, for_change) + mpk))
 
     def get_address(self, for_change, n):
         pubkey = self.get_pubkey(for_change, n)
-        address = public_key_to_bc_address( pubkey.decode('hex') )
+        address = public_key_to_bc_address(pubkey.decode('hex'))
         return address
 
     @classmethod
-    def get_pubkey_from_mpk(self, mpk, for_change, n):
+    def get_pubkey_from_mpk(cls, mpk, for_change, n):
         curve = SECP256k1
-        z = self.get_sequence(mpk, for_change, n)
-        master_public_key = ecdsa.VerifyingKey.from_string( mpk, curve = SECP256k1 )
+        z = cls.get_sequence(mpk, for_change, n)
+        master_public_key = ecdsa.VerifyingKey.from_string(mpk, curve=SECP256k1)
         pubkey_point = master_public_key.pubkey.point + z*curve.generator
-        public_key2 = ecdsa.VerifyingKey.from_public_point( pubkey_point, curve = SECP256k1 )
+        public_key2 = ecdsa.VerifyingKey.from_public_point(pubkey_point, curve=SECP256k1)
         return '04' + public_key2.to_string().encode('hex')
 
     def derive_pubkeys(self, for_change, n):
@@ -192,11 +191,10 @@ class OldAccount(Account):
 
     def get_private_key_from_stretched_exponent(self, for_change, n, secexp):
         order = generator_secp256k1.order()
-        secexp = ( secexp + self.get_sequence(self.mpk, for_change, n) ) % order
-        pk = number_to_string( secexp, generator_secp256k1.order() )
+        secexp = (secexp + self.get_sequence(self.mpk, for_change, n)) % order
+        pk = number_to_string(secexp, generator_secp256k1.order())
         compressed = False
-        return SecretToASecret( pk, compressed )
-        
+        return SecretToASecret(pk, compressed)
 
     def get_private_key(self, sequence, wallet, password):
         seed = wallet.get_seed(password)
@@ -206,11 +204,10 @@ class OldAccount(Account):
         pk = self.get_private_key_from_stretched_exponent(for_change, n, secexp)
         return [pk]
 
-
     def check_seed(self, seed):
         curve = SECP256k1
         secexp = self.stretch_key(seed)
-        master_private_key = ecdsa.SigningKey.from_secret_exponent( secexp, curve = SECP256k1 )
+        master_private_key = ecdsa.SigningKey.from_secret_exponent(secexp, curve=SECP256k1)
         master_public_key = master_private_key.get_verifying_key().to_string()
         if master_public_key != self.mpk:
             print_error('invalid password (mpk)', self.mpk.encode('hex'), master_public_key.encode('hex'))
@@ -224,13 +221,13 @@ class OldAccount(Account):
         return _('Old Electrum format')
 
     def get_xpubkeys(self, for_change, n):
-        s = ''.join(map(lambda x: bitcoin.int_to_hex(x,2), (for_change, n)))
+        s = ''.join(map(lambda x: bitcoin.int_to_hex(x, 2), (for_change, n)))
         mpk = self.mpk.encode('hex')
         x_pubkey = 'fe' + mpk + s
-        return [ x_pubkey ]
+        return [x_pubkey]
 
     @classmethod
-    def parse_xpubkey(self, x_pubkey):
+    def parse_xpubkey(cls, x_pubkey):
         assert is_extended_pubkey(x_pubkey)
         pk = x_pubkey[2:]
         mpk = pk[0:128]
@@ -264,7 +261,7 @@ class BIP32_Account(Account):
         return [self.xpub]
 
     @classmethod
-    def derive_pubkey_from_xpub(self, xpub, for_change, n):
+    def derive_pubkey_from_xpub(cls, xpub, for_change, n):
         _, _, _, c, cK = deserialize_xkey(xpub)
         for i in [for_change, n]:
             cK, c = CKD_pub(cK, c, i)
@@ -279,7 +276,6 @@ class BIP32_Account(Account):
     def derive_pubkeys(self, for_change, n):
         return self.derive_pubkey_from_xpub(self.xpub, for_change, n)
 
-
     def get_private_key(self, sequence, wallet, password):
         out = []
         xpubs = self.get_master_pubkeys()
@@ -289,7 +285,7 @@ class BIP32_Account(Account):
             if not xpriv:
                 continue
             _, _, _, c, k = deserialize_xkey(xpriv)
-            pk = bip32_private_key( sequence, k, c )
+            pk = bip32_private_key(sequence, k, c)
             out.append(pk)
         return out
 
@@ -298,12 +294,12 @@ class BIP32_Account(Account):
 
     def get_xpubkeys(self, for_change, n):
         # unsorted
-        s = ''.join(map(lambda x: bitcoin.int_to_hex(x,2), (for_change,n)))
+        s = ''.join(map(lambda x: bitcoin.int_to_hex(x, 2), (for_change, n)))
         xpubs = self.get_master_pubkeys()
         return map(lambda xpub: 'ff' + bitcoin.DecodeBase58Check(xpub).encode('hex') + s, xpubs)
 
     @classmethod
-    def parse_xpubkey(self, pubkey):
+    def parse_xpubkey(cls, pubkey):
         assert is_extended_pubkey(pubkey)
         pk = pubkey.decode('hex')
         pk = pk[1:]
@@ -311,12 +307,11 @@ class BIP32_Account(Account):
         dd = pk[78:]
         s = []
         while dd:
-            n = int( bitcoin.rev_hex(dd[0:2].encode('hex')), 16)
+            n = int(bitcoin.rev_hex(dd[0:2].encode('hex')), 16)
             dd = dd[2:]
             s.append(n)
         assert len(s) == 2
         return xkey, s
-
 
     def get_name(self, k):
         name = "Unnamed account"
@@ -326,10 +321,9 @@ class BIP32_Account(Account):
             if num == '0':
                 name = "Main account"
             else:
-                name = "Account %s"%num
-                    
-        return name
+                name = "Account %s" % num
 
+        return name
 
 
 class BIP32_Account_2of2(BIP32_Account):
@@ -384,7 +378,3 @@ class BIP32_Account_2of3(BIP32_Account_2of2):
 
     def get_type(self):
         return _('Multisig 2 of 3')
-
-
-
-

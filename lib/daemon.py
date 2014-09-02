@@ -35,8 +35,8 @@ DAEMON_PORT=8001
 
 def do_start_daemon(config):
     import subprocess
-    logfile = open(os.path.join(config.path, 'daemon.log'),'w')
-    p = subprocess.Popen(["python",__file__], stderr=logfile, stdout=logfile, close_fds=True)
+    logfile = open(os.path.join(config.path, 'daemon.log'), 'w')
+    p = subprocess.Popen(["python", __file__], stderr=logfile, stdout=logfile, close_fds=True)
     print_stderr("starting daemon (PID %d)"%p.pid)
 
 
@@ -49,7 +49,7 @@ def get_daemon(config, start_daemon=True):
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect(('', daemon_port))
             if not daemon_started:
-                print_stderr("Connected to daemon on port %d"%daemon_port)
+                print_stderr("Connected to daemon on port %d" % daemon_port)
             return s
         except socket.error:
             if not start_daemon:
@@ -59,7 +59,6 @@ def get_daemon(config, start_daemon=True):
                 daemon_started = True
             else:
                 time.sleep(0.1)
-
 
 
 class ClientThread(threading.Thread):
@@ -102,9 +101,6 @@ class ClientThread(threading.Thread):
         self.server.remove_client(self)
 
 
-
-
-
 class NetworkServer(threading.Thread):
 
     def __init__(self, config):
@@ -137,9 +133,9 @@ class NetworkServer(threading.Thread):
         threading.Thread.start(self)
 
     def add_client(self, client):
-        for key in ['status','banner','updated','servers','interfaces']:
+        for key in ['status', 'banner', 'updated', 'servers', 'interfaces']:
             value = self.network.get_status_value(key)
-            client.response_queue.put({'method':'network.status', 'params':[key, value]})
+            client.response_queue.put({'method': 'network.status', 'params': [key, value]})
         with self.lock:
             self.clients.append(client)
             print_error("new client:", len(self.clients))
@@ -158,7 +154,6 @@ class NetworkServer(threading.Thread):
         if self.debug:
             print_error("-->", request)
         self.network.requests_queue.put(request)
-
 
     def run(self):
         self.network.start(self.network_queue)
@@ -182,7 +177,6 @@ class NetworkServer(threading.Thread):
 
         self.network.stop()
         print_error("server exiting")
-
 
 
 def daemon_loop(server):

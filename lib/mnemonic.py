@@ -36,7 +36,7 @@ class Mnemonic(object):
         if lang is None:
             lang = 'english'
         path = os.path.join(os.path.dirname(__file__), 'wordlist', lang + '.txt')
-        lines = open(path,'r').read().strip().split('\n')
+        lines = open(path, 'r').read().strip().split('\n')
         self.wordlist = []
         for line in lines:
             line = line.split('#')[0]
@@ -44,15 +44,16 @@ class Mnemonic(object):
             assert ' ' not in line
             if line:
                 self.wordlist.append(line)
-        print_error("wordlist has %d words"%len(self.wordlist))
+        print_error("wordlist has %d words" % len(self.wordlist))
 
     @classmethod
-    def mnemonic_to_seed(self, mnemonic, passphrase):
+    def mnemonic_to_seed(cls, mnemonic, passphrase):
         PBKDF2_ROUNDS = 2048
-        return pbkdf2.PBKDF2(mnemonic, 'mnemonic' + passphrase, iterations = PBKDF2_ROUNDS, macmodule = hmac, digestmodule = hashlib.sha512).read(64)
+        return pbkdf2.PBKDF2(mnemonic, 'mnemonic' + passphrase, iterations=PBKDF2_ROUNDS,
+                             macmodule=hmac, digestmodule=hashlib.sha512).read(64)
 
     @classmethod
-    def prepare_seed(self, seed):
+    def prepare_seed(cls, seed):
         import unicodedata
         return unicodedata.normalize('NFC', unicode(seed.strip()))
 
@@ -60,8 +61,8 @@ class Mnemonic(object):
         n = len(self.wordlist)
         words = []
         while i:
-            x = i%n
-            i = i/n
+            x = i % n
+            i /= n
             words.append(self.wordlist[x])
         return ' '.join(words)
 
@@ -81,11 +82,11 @@ class Mnemonic(object):
         return i % custom_entropy == 0
 
     def make_seed(self, num_bits=128, custom_entropy=1):
-        n = int(math.ceil(math.log(custom_entropy,2)))
+        n = int(math.ceil(math.log(custom_entropy, 2)))
         # we add at least 16 bits
         n_added = max(16, 8 + num_bits - n)
-        print_error("make_seed: adding %d bits"%n_added)
-        my_entropy = ecdsa.util.randrange( pow(2, n_added) )
+        print_error("make_seed: adding %d bits" % n_added)
+        my_entropy = ecdsa.util.randrange(pow(2, n_added))
         nonce = 0
         while True:
             nonce += 1
@@ -97,6 +98,5 @@ class Mnemonic(object):
             # this removes 8 bits of entropy
             if is_new_seed(seed):
                 break
-        print_error('%d words'%len(seed.split()))
+        print_error('%d words' % len(seed.split()))
         return seed
-
