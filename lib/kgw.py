@@ -1,6 +1,9 @@
 __author__ = 'laudney'
 
 
+from pprint import pprint
+
+
 # Kimoto Gravity Well difficulty retarget algo for Reddcoin
 class KGW(object):
     def __init__(self):
@@ -126,8 +129,7 @@ class KGW(object):
         return new_nbits, new_target
 
     def get_chain_target(self, prev_chain, chain):
+        pprint(prev_chain)
+
         full_chain = prev_chain + chain
         return [self.get_target(full_chain[:i]) for i in range(len(prev_chain)+1, len(full_chain))]
-
-if __name__ == '__main__':
-    print 'KGW'

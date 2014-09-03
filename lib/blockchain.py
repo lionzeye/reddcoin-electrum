@@ -136,7 +136,7 @@ class Blockchain(threading.Thread):
         if not self.verify_chain(chain): raise
 
         self.save_chunk(index, data)
-        print_error("validated chunk %d" % index * self.chunk_size + num - 1)
+        print_error("validated chunk %d" % (index * self.chunk_size + num - 1))
 
     def header_to_string(self, res):
         s = int_to_hex(res.get('version'), 4) \
