@@ -56,12 +56,16 @@ class KGW(object):
         first_block = chain[0]
         last_block = chain[-1]
         last_timestamp = last_block.get('timestamp')
-        first_height = first_block.get('block_height')
+        first_height = max(0, first_block.get('block_height')-1)
         last_height = last_block.get('block_height')
         next_height = last_height + 1
 
         past_blocks_min, past_blocks_max = self.past_blocks(next_height)
+
         is_posv = last_height >= last_pow_block
+
+        if is_posv:
+            first_height = self.last_pow_block
 
         if last_height < past_blocks_min:
             return self.max_nbits, self.max_target
@@ -74,7 +78,7 @@ class KGW(object):
         height_reading = last_height
 
         i = 1
-        while height_reading >= first_height:
+        while height_reading > first_height:
             if i > past_blocks_max:
                 break
 
@@ -109,7 +113,7 @@ class KGW(object):
             i += 1
 
         # failed to calculate difficulty due to not enough blocks
-        if height_reading < first_height:
+        if height_reading <= first_height:
             return None, None
 
         new_target = past_target_average
@@ -120,6 +124,10 @@ class KGW(object):
         new_target = min(new_target, max_target)
         new_nbits = self.nbits(new_target)
         return new_nbits, new_target
+
+    def get_chain_target(self, prev_chain, chain):
+        full_chain = prev_chain + chain
+        return [self.get_target(full_chain[:i]) for i in range(len(prev_chain)+1, len(full_chain))]
 
 if __name__ == '__main__':
     print 'KGW'
