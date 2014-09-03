@@ -5,6 +5,7 @@ from PyQt4.QtGui import *
 
 from decimal import Decimal
 
+
 class MyLineEdit(QLineEdit):
     frozen = pyqtSignal()
 
@@ -13,8 +14,8 @@ class MyLineEdit(QLineEdit):
         self.setFrame(not b)
         self.frozen.emit()
 
-class AmountEdit(MyLineEdit):
 
+class AmountEdit(MyLineEdit):
     def __init__(self, base_unit, is_int = False, parent=None):
         QLineEdit.__init__(self, parent)
         self.base_unit = base_unit
@@ -51,7 +52,7 @@ class AmountEdit(MyLineEdit):
             textRect.adjust(2, 0, -10, 0)
             painter = QPainter(self)
             painter.setPen(self.help_palette.brush(QPalette.Disabled, QPalette.Text).color())
-            painter.drawText(textRect, Qt.AlignRight | Qt.AlignVCenter, self.base_unit())
+            painter.drawText(textRect, Qt.AlignRight | Qt.AlignVCenter, self.base_unit)
 
     def get_amount(self):
         try:
@@ -61,22 +62,9 @@ class AmountEdit(MyLineEdit):
         return x
 
 
-class BTCAmountEdit(AmountEdit):
-
-    def __init__(self, decimal_point, is_int = False, parent=None):
-        AmountEdit.__init__(self, self._base_unit, is_int, parent)
-        self.decimal_point = decimal_point
-
-    def _base_unit(self):
-        p = self.decimal_point()
-        assert p in [2, 5, 8]
-        if p == 8:
-            return 'BTC'
-        if p == 5:
-            return 'mBTC'
-        if p == 2:
-            return 'bits'
-        raise Exception('Unknown base unit')
+class RDDAmountEdit(AmountEdit):
+    def __init__(self, is_int=False, parent=None):
+        AmountEdit.__init__(self, 'RDD', is_int, parent)
 
     def get_amount(self):
         try:
@@ -84,7 +72,7 @@ class BTCAmountEdit(AmountEdit):
         except:
             return None
         p = pow(10, self.decimal_point())
-        return int( p * x )
+        return int(p * x)
 
     def setAmount(self, amount):
         if amount is None:
