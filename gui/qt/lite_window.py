@@ -14,7 +14,7 @@ except ImportError:
 
 from decimal import Decimal as D
 from electrum.util import get_resource_path as rsrc
-from electrum.bitcoin import is_valid
+from electrum.reddcoin import is_valid
 from electrum.i18n import _
 import decimal
 import json
@@ -37,7 +37,7 @@ import shutil
 
 from util import *
 
-bitcoin = lambda v: v * 100000000
+reddcoin = lambda v: v * 100000000
 
 def IconButton(filename, parent=None):
     pixmap = QPixmap(filename)
@@ -140,9 +140,9 @@ class MiniWindow(QDialog):
         self.balance_label.setObjectName("balance_label")
 
 
-        # Bitcoin address code
+        # Reddcoin address code
         self.address_input = QLineEdit()
-        self.address_input.setPlaceholderText(_("Enter a Bitcoin address or contact"))
+        self.address_input.setPlaceholderText(_("Enter a Reddcoin address or contact"))
         self.address_input.setObjectName("address_input")
 
         self.address_input.setFocusPolicy(Qt.ClickFocus)
@@ -357,7 +357,7 @@ class MiniWindow(QDialog):
         self.amount_input_changed(self.amount_input.text())
 
     def set_balances(self, btc_balance):
-        """Set the bitcoin balance and update the amount label accordingly."""
+        """Set the reddcoin balance and update the amount label accordingly."""
         self.btc_balance = btc_balance
         quote_text = self.create_quote_text(btc_balance)
         if quote_text:
@@ -370,7 +370,7 @@ class MiniWindow(QDialog):
         self.setWindowTitle("Electrum %s - %s %s" % (electrum_version, amount, unit))
 
     def amount_input_changed(self, amount_text):
-        """Update the number of bitcoins displayed."""
+        """Update the number of reddcoins displayed."""
         self.check_button_status()
 
         try:
@@ -387,7 +387,7 @@ class MiniWindow(QDialog):
 
     def create_quote_text(self, btc_balance):
         """Return a string copy of the amount fiat currency the 
-        user has in bitcoins."""
+        user has in reddcoins."""
         from electrum.plugins import run_hook
         r = {}
         run_hook('get_fiat_balance_text', btc_balance, r)
@@ -400,7 +400,7 @@ class MiniWindow(QDialog):
             self.amount_input.setText("")
 
     def check_button_status(self):
-        """Check that the bitcoin address is valid and that something
+        """Check that the reddcoin address is valid and that something
         is entered in the amount before making the send button clickable."""
         try:
             value = D(str(self.amount_input.text())) * (10**self.actuator.g.decimal_point)
@@ -459,7 +459,7 @@ class MiniWindow(QDialog):
 
 
     def the_website(self):
-        webbrowser.open("http://electrum.org")
+        webbrowser.open("http://www.reddwallet.com")
 
 
     def toggle_receiving_layout(self, toggle_state):
@@ -504,7 +504,7 @@ class BalanceLabel(QLabel):
                 
 
     def set_balance_text(self, amount, unit, quote_text):
-        """Set the amount of bitcoins in the gui."""
+        """Set the amount of reddcoins in the gui."""
         if self.state == self.SHOW_CONNECTING:
             self.state = self.SHOW_BALANCE
 
@@ -575,7 +575,7 @@ class ReceivePopup(QDialog):
         self.close()
 
     def setup(self, address):
-        label = QLabel(_("Copied your Bitcoin address to the clipboard!"))
+        label = QLabel(_("Copied your Reddcoin address to the clipboard!"))
         address_display = QLineEdit(address)
         address_display.setReadOnly(True)
         resize_line_edit_width(address_display, address)
@@ -585,7 +585,7 @@ class ReceivePopup(QDialog):
         main_layout.addWidget(address_display)
 
         self.setMouseTracking(True)
-        self.setWindowTitle("Electrum - " + _("Receive Bitcoin payment"))
+        self.setWindowTitle("Electrum - " + _("Receive Reddcoin payment"))
         self.setWindowFlags(Qt.Window|Qt.FramelessWindowHint|
                             Qt.MSWindowsFixedSizeDialogHint)
         self.layout().setSizeConstraint(QLayout.SetFixedSize)
@@ -602,7 +602,7 @@ class ReceivePopup(QDialog):
 
 class MiniActuator:
     """Initialize the definitions relating to themes and 
-    sending/receiving bitcoins."""
+    sending/receiving reddcoins."""
     
     
     def __init__(self, main_window):
@@ -692,12 +692,12 @@ class MiniActuator:
 
 
     def send(self, address, amount, parent_window):
-        """Send bitcoins to the target address."""
+        """Send reddcoins to the target address."""
         dest_address = self.fetch_destination(address)
 
         if dest_address is None or not is_valid(dest_address):
             QMessageBox.warning(parent_window, _('Error'), 
-                _('Invalid Bitcoin Address') + ':\n' + address, _('OK'))
+                _('Invalid Reddcoin Address') + ':\n' + address, _('OK'))
             return False
 
         amount = D(unicode(amount)) * (10*self.g.decimal_point)
@@ -714,9 +714,9 @@ class MiniActuator:
 
         fee = 0
         # 0.1 BTC = 10000000
-        if amount < bitcoin(1) / 10:
+        if amount < reddcoin(1) / 10:
             # 0.001 BTC
-            fee = bitcoin(1) / 1000
+            fee = reddcoin(1) / 1000
 
         try:
             tx = self.g.wallet.mktx([(dest_address, amount)], password, fee)

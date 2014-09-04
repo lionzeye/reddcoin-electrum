@@ -129,7 +129,7 @@ class ElectrumWindow(QMainWindow):
         self.create_status_bar()
         self.need_update = threading.Event()
 
-        self.decimal_point = config.get('decimal_point', 5)
+        self.decimal_point = config.get('decimal_point', 8)
         self.num_zeros     = int(config.get('num_zeros',0))
         self.invoices      = {}
 
@@ -366,9 +366,9 @@ class ElectrumWindow(QMainWindow):
 
         help_menu = menubar.addMenu(_("&Help"))
         help_menu.addAction(_("&About"), self.show_about)
-        help_menu.addAction(_("&Official website"), lambda: webbrowser.open("http://electrum.org"))
+        help_menu.addAction(_("&Official website"), lambda: webbrowser.open("http://www.reddwallet.com"))
         help_menu.addSeparator()
-        help_menu.addAction(_("&Documentation"), lambda: webbrowser.open("http://electrum.org/documentation.html")).setShortcut(QKeySequence.HelpContents)
+        help_menu.addAction(_("&Documentation"), lambda: webbrowser.open("http://www.reddwallet.com/documentation.html")).setShortcut(QKeySequence.HelpContents)
         help_menu.addAction(_("&Report Bug"), self.show_report_bug)
 
         self.setMenuBar(menubar)
@@ -379,7 +379,7 @@ class ElectrumWindow(QMainWindow):
 
     def show_report_bug(self):
         QMessageBox.information(self, "Electrum - " + _("Reporting Bugs"),
-            _("Please report any bugs as issues on github:")+" <a href=\"https://github.com/spesmilo/electrum/issues\">https://github.com/spesmilo/electrum/issues</a>")
+            _("Please report any bugs as issues on github:")+" <a href=\"https://github.com/reddcoin-project/reddcoin-electrum/issues\">https://github.com/reddcoin-project/reddcoin-electrum/issues</a>")
 
 
     def notify_transactions(self):
@@ -826,7 +826,7 @@ class ElectrumWindow(QMainWindow):
                 query.append('amount=%s'%format_satoshis(amount))
             if message:
                 query.append('message=%s'%urllib.quote(message))
-            p = urlparse.ParseResult(scheme='bitcoin', netloc='', path=addr, params='', query='&'.join(query), fragment='')
+            p = urlparse.ParseResult(scheme='reddcoin', netloc='', path=addr, params='', query='&'.join(query), fragment='')
             url = urlparse.urlunparse(p)
         else:
             url = ""
@@ -1215,7 +1215,7 @@ class ElectrumWindow(QMainWindow):
         try:
             address, amount, label, message, request_url = util.parse_URI(URI)
         except Exception as e:
-            QMessageBox.warning(self, _('Error'), _('Invalid bitcoin URI:') + '\n' + str(e), _('OK'))
+            QMessageBox.warning(self, _('Error'), _('Invalid reddcoin URI:') + '\n' + str(e), _('OK'))
             return
 
         self.tabs.setCurrentIndex(1)
@@ -1501,7 +1501,7 @@ class ElectrumWindow(QMainWindow):
             payto_addr = item.data(0,33).toString()
             menu.addAction(_("Copy to Clipboard"), lambda: self.app.clipboard().setText(addr))
             menu.addAction(_("Pay to"), lambda: self.payto(payto_addr))
-            menu.addAction(_("QR code"), lambda: self.show_qrcode("bitcoin:" + addr, _("Address")))
+            menu.addAction(_("QR code"), lambda: self.show_qrcode("reddcoin:" + addr, _("Address")))
             if is_editable:
                 menu.addAction(_("Edit label"), lambda: self.edit_label(False))
                 menu.addAction(_("Delete"), lambda: self.delete_contact(addr))
@@ -1787,7 +1787,7 @@ class ElectrumWindow(QMainWindow):
         vbox.addWidget(QLabel(_('Account name')+':'))
         e = QLineEdit()
         vbox.addWidget(e)
-        msg = _("Note: Newly created accounts are 'pending' until they receive bitcoins.") + " " \
+        msg = _("Note: Newly created accounts are 'pending' until they receive reddcoins.") + " " \
             + _("You will need to wait for 2 confirmations until the correct balance is displayed and more addresses are created for that account.")
         l = QLabel(msg)
         l.setWordWrap(True)

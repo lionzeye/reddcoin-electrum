@@ -18,7 +18,7 @@ import threading
 from electrum.plugins import run_hook
 
 
-MSG_ENTER_ANYTHING    = _("Please enter a wallet seed, a master public key, a list of Bitcoin addresses, or a list of private keys")
+MSG_ENTER_ANYTHING    = _("Please enter a wallet seed, a master public key, a list of Reddcoin addresses, or a list of private keys")
 MSG_SHOW_MPK          = _("This is your master public key")
 MSG_ENTER_MPK         = _("Please enter your master public key")
 MSG_ENTER_COLD_MPK    = _("Please enter the master public key of your cosigner wallet")
