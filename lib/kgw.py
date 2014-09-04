@@ -65,7 +65,7 @@ class KGW(object):
 
         past_blocks_min, past_blocks_max = self.past_blocks(next_height)
 
-        is_posv = last_height >= last_pow_block
+        is_posv = last_height >= self.last_pow_block
 
         if is_posv:
             first_height = self.last_pow_block
@@ -73,7 +73,7 @@ class KGW(object):
         if last_height < past_blocks_min:
             return self.max_nbits, self.max_target
 
-        if is_posv and (last_height - last_pow_block) < past_blocks_min:
+        if is_posv and (last_height - self.last_pow_block) < past_blocks_min:
             return self.posv_reset_nbits, self.posv_reset_target
 
         past_blocks_mass = past_rate_actual_seconds = past_rate_target_seconds = 0
@@ -124,12 +124,10 @@ class KGW(object):
             new_target *= past_rate_actual_seconds
             new_target /= past_rate_target_seconds
 
-        new_target = min(new_target, max_target)
+        new_target = min(new_target, self.max_target)
         new_nbits = self.nbits(new_target)
         return new_nbits, new_target
 
     def get_chain_target(self, prev_chain, chain):
-        pprint(prev_chain)
-
         full_chain = prev_chain + chain
         return [self.get_target(full_chain[:i]) for i in range(len(prev_chain)+1, len(full_chain))]

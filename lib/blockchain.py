@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import threading, time, Queue, os, sys, shutil
+import threading, time, Queue, os, sys, shutil, traceback
 from util import user_dir, appdata_dir, print_error
 from bitcoin import *
 from kgw import KGW
@@ -117,11 +117,17 @@ class Blockchain(threading.Thread):
             prev_hash = self.hash_header(prev_header)
             bits, target = chain_target[i]
             _hash = self.hash_header(header)
-            try:
-                assert prev_hash == header.get('prev_block_hash')
-                assert bits == header.get('bits')
-                assert int('0x'+_hash, 16) < target
-            except Exception:
+
+            if prev_hash != header.get('prev_block_hash'):
+                print_error("height %d: prev_hash mismatch" % height)
+                return False
+
+            if bits != header.get('bits'):
+                print_error("height %d: bits mismatch %u vs %u" % (height, bits, header.get('bits')))
+                return False
+
+            if int('0x'+_hash, 16) >= target:
+                print_error("height %d: hash >= target")
                 return False
 
             prev_header = header
@@ -133,6 +139,9 @@ class Blockchain(threading.Thread):
         num = len(data) / self.header_size
 
         chain = [self.header_from_string(data[i*self.header_size:(i+1)*self.header_size]) for i in range(num)]
+        for i, c in enumerate(chain):
+            c['block_height'] = index * self.chunk_size + i
+
         if not self.verify_chain(chain): raise
 
         self.save_chunk(index, data)
@@ -288,6 +297,7 @@ class Blockchain(threading.Thread):
                 n += 1
             except Exception:
                 print_error('Verify chunk failed!')
+                print traceback.format_exc()
                 n -= 1
                 if n < 0:
                     return False
