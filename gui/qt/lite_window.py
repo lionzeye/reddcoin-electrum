@@ -14,7 +14,7 @@ except ImportError:
 
 from decimal import Decimal as D
 from electrum.util import get_resource_path as rsrc
-from electrum.reddcoin import is_valid
+from electrum.bitcoin import is_valid
 from electrum.i18n import _
 import decimal
 import json

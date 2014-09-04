@@ -67,7 +67,7 @@ class Network(threading.Thread):
             config = {}  # Do not use mutables as default values!
         threading.Thread.__init__(self)
         self.daemon = True
-        self.config = SimpleConfig(config) if config.isinstance(dict) else config
+        self.config = SimpleConfig(config) if isinstance(config, dict) else config
         self.lock = threading.Lock()
         self.num_server = 8 if not self.config.get('oneserver') else 0
         self.blockchain = Blockchain(self.config, self)
