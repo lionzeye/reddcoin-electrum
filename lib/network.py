@@ -45,20 +45,19 @@ def parse_servers(result):
     return servers
 
 
-
 def filter_protocol(servers, p):
     l = []
     for k, protocols in servers.items():
         if p in protocols:
-            l.append( ':'.join([k, protocols[p], p]) )
+            l.append(':'.join([k, protocols[p], p]))
     return l
     
 
 def pick_random_server(p='s'):
-    return random.choice( filter_protocol(DEFAULT_SERVERS,p) )
+    return random.choice(filter_protocol(DEFAULT_SERVERS, p))
+
 
 from simple_config import SimpleConfig
-
 
 
 class Network(threading.Thread):
@@ -68,13 +67,13 @@ class Network(threading.Thread):
             config = {}  # Do not use mutables as default values!
         threading.Thread.__init__(self)
         self.daemon = True
-        self.config = SimpleConfig(config) if type(config) == type({}) else config
+        self.config = SimpleConfig(config) if config.isinstance(dict) else config
         self.lock = threading.Lock()
         self.num_server = 8 if not self.config.get('oneserver') else 0
         self.blockchain = Blockchain(self.config, self)
         self.interfaces = {}
         self.queue = Queue.Queue()
-        self.protocol = self.config.get('protocol','s')
+        self.protocol = self.config.get('protocol', 's')
         self.running = False
 
         # Server for addresses and transactions
@@ -82,12 +81,12 @@ class Network(threading.Thread):
         if not self.default_server:
             self.default_server = pick_random_server(self.protocol)
 
-        self.irc_servers = {} # returned by interface (list from irc)
+        self.irc_servers = {}  # returned by interface (list from irc)
 
         self.disconnected_servers = set([])
         self.disconnected_time = time.time()
 
-        self.recent_servers = self.config.get('recent_servers',[]) # successful connections
+        self.recent_servers = self.config.get('recent_servers', [])  # successful connections
         self.pending_servers = set()
 
         self.banner = ''
@@ -97,7 +96,7 @@ class Network(threading.Thread):
         self.merkle_roots = {}
         self.utxo_roots = {}
 
-        dir_path = os.path.join( self.config.path, 'certs')
+        dir_path = os.path.join(self.config.path, 'certs')
         if not os.path.exists(dir_path):
             os.mkdir(dir_path)
 
@@ -106,9 +105,8 @@ class Network(threading.Thread):
         self.connection_status = 'connecting'
         self.requests_queue = Queue.Queue()
 
-
     def get_server_height(self):
-        return self.heights.get(self.default_server,0)
+        return self.heights.get(self.default_server, 0)
 
     def server_is_lagging(self):
         h = self.get_server_height()
@@ -127,9 +125,9 @@ class Network(threading.Thread):
 
     def send_subscriptions(self):
         for addr in self.addresses:
-            self.interface.send_request({'method':'blockchain.address.subscribe', 'params':[addr]})
-        self.interface.send_request({'method':'server.banner','params':[]})
-        self.interface.send_request({'method':'server.peers.subscribe','params':[]})
+            self.interface.send_request({'method': 'blockchain.address.subscribe', 'params': [addr]})
+        self.interface.send_request({'method': 'server.banner', 'params': []})
+        self.interface.send_request({'method': 'server.peers.subscribe', 'params': []})
 
     def get_status_value(self, key):
         if key == 'status':
@@ -146,7 +144,7 @@ class Network(threading.Thread):
 
     def notify(self, key):
         value = self.get_status_value(key)
-        self.response_queue.put({'method':'network.status', 'params':[key, value]})
+        self.response_queue.put({'method': 'network.status', 'params': [key, value]})
 
     def random_server(self):
         choice_list = []
@@ -160,7 +158,7 @@ class Network(threading.Thread):
         if not choice_list: 
             return
         
-        server = random.choice( choice_list )
+        server = random.choice(choice_list)
         return server
 
     def get_parameters(self):
@@ -180,7 +178,7 @@ class Network(threading.Thread):
             for s in self.recent_servers:
                 host, port, protocol = s.split(':')
                 if host not in out:
-                    out[host] = { protocol:port }
+                    out[host] = {protocol: port}
         return out
 
     def start_interface(self, server):
@@ -215,7 +213,7 @@ class Network(threading.Thread):
         self.config.set_key('auto_cycle', auto_connect, True)
         self.config.set_key("proxy", proxy, True)
         self.config.set_key("protocol", protocol, True)
-        server = ':'.join([ host, port, protocol ])
+        server = ':'.join([host, port, protocol])
         self.config.set_key("server", server, True)
 
         if self.proxy != proxy or self.protocol != protocol:
@@ -235,7 +233,6 @@ class Network(threading.Thread):
         else:
             self.set_server(server)
 
-
     def switch_to_random_interface(self):
         while self.interfaces:
             i = random.choice(self.interfaces.values())
@@ -254,10 +251,8 @@ class Network(threading.Thread):
         self.send_subscriptions()
         self.set_status('connected')
 
-
     def stop_interface(self):
         self.interface.stop() 
-
 
     def set_server(self, server):
         if self.default_server == server and self.interface.is_connected:
@@ -277,20 +272,18 @@ class Network(threading.Thread):
         self.config.set_key("server", server, True)
 
         if server in self.interfaces.keys():
-            self.switch_to_interface( self.interfaces[server] )
+            self.switch_to_interface(self.interfaces[server])
         else:
             self.interface = self.start_interface(server)
         
-
     def add_recent_server(self, i):
         # list is ordered
         s = i.server
         if s in self.recent_servers:
             self.recent_servers.remove(s)
-        self.recent_servers.insert(0,s)
+        self.recent_servers.insert(0, s)
         self.recent_servers = self.recent_servers[0:20]
         self.config.set_key('recent_servers', self.recent_servers)
-
 
     def add_interface(self, i):
         self.interfaces[i.server] = i
@@ -303,11 +296,10 @@ class Network(threading.Thread):
     def new_blockchain_height(self, blockchain_height, i):
         if self.is_connected():
             if self.server_is_lagging():
-                print_error( "Server is lagging", blockchain_height, self.get_server_height())
+                print_error("Server is lagging", blockchain_height, self.get_server_height())
                 if self.config.get('auto_cycle'):
                     self.set_server(i.server)
         self.notify('updated')
-
 
     def process_response(self, i, response):
         method = response['method']
@@ -336,7 +328,7 @@ class Network(threading.Thread):
         _id = request['id']
 
         if method.startswith('network.'):
-            out = {'id':_id}
+            out = {'id': _id}
             try:
                 f = getattr(self, method[8:])
             except AttributeError:
@@ -353,11 +345,10 @@ class Network(threading.Thread):
         if method == 'blockchain.address.subscribe':
             addr = params[0]
             if addr in self.addresses:
-                self.response_queue.put({'id':_id, 'result':self.addresses[addr]}) 
+                self.response_queue.put({'id': _id, 'result': self.addresses[addr]})
                 return
 
         self.interface.send_request(request)
-
 
     def run(self):
         while self.is_running():
@@ -385,7 +376,7 @@ class Network(threading.Thread):
             if i.is_connected:
                 self.add_interface(i)
                 self.add_recent_server(i)
-                i.send_request({'method':'blockchain.headers.subscribe','params':[]})
+                i.send_request({'method': 'blockchain.headers.subscribe', 'params': []})
                 if i == self.interface:
                     print_error('sending subscriptions to', self.interface.server)
                     self.send_subscriptions()
@@ -406,7 +397,6 @@ class Network(threading.Thread):
         for i in self.interfaces.values():
             i.stop()
 
-
     def on_header(self, i, r):
         result = r.get('result')
         if not result:
@@ -418,11 +408,11 @@ class Network(threading.Thread):
         self.merkle_roots[i.server] = result.get('merkle_root')
         self.utxo_roots[i.server] = result.get('utxo_root')
         # notify blockchain about the new height
-        self.blockchain.queue.put((i,result))
+        self.blockchain.queue.put((i, result))
 
         if i == self.interface:
             if self.server_is_lagging() and self.config.get('auto_cycle'):
-                print_error( "Server lagging, stopping interface")
+                print_error("Server lagging, stopping interface")
                 self.stop_interface()
             self.notify('updated')
 
@@ -455,5 +445,3 @@ class Network(threading.Thread):
 
     def get_local_height(self):
         return self.blockchain.height()
-
-
