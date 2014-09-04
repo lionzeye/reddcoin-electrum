@@ -223,6 +223,7 @@ class Blockchain(threading.Thread):
             f.close()
             if len(h) == self.header_size:
                 h = self.header_from_string(h)
+                h['block_height'] = block_height
                 self.cache_headers[block_height] = h
                 return h
 
