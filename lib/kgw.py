@@ -2,12 +2,12 @@ __author__ = 'laudney'
 
 
 from pprint import pprint
+import numpy as np
 
 
 # Kimoto Gravity Well difficulty retarget algo for Reddcoin
 class KGW(object):
     def __init__(self):
-        self.target_block_spacing_seconds = 60
         self.time_day_seconds = 24 * 60 * 60
         self.last_pow_block = 260799
 
@@ -31,8 +31,8 @@ class KGW(object):
             past_seconds_min = self.time_day_seconds / 4
             past_seconds_max = self.time_day_seconds * 7
 
-        past_blocks_min = past_seconds_min / self.target_block_spacing_seconds
-        past_blocks_max = past_seconds_max / self.target_block_spacing_seconds
+        past_blocks_min = past_seconds_min / 60
+        past_blocks_max = past_seconds_max / 60
 
         return past_blocks_min, past_blocks_max
 
@@ -61,7 +61,7 @@ class KGW(object):
 
         return a * pow(2, 8 * (nbits / MM - 3))
 
-    def get_target(self, chain=None):
+    def get_target_vanilla(self, chain=None):
         if chain is None or len(chain) == 0:
             return self.genesis_nbits, self.genesis_target
 
@@ -107,7 +107,7 @@ class KGW(object):
             past_target_average_prev = past_target_average
 
             past_rate_actual_seconds = max(0, last_timestamp - timestamp_reading)
-            past_rate_target_seconds = self.target_block_spacing_seconds * past_blocks_mass
+            past_rate_target_seconds = 60 * past_blocks_mass
             past_rate_adjustment_ratio = 1.0
             if past_rate_actual_seconds != 0 and past_rate_target_seconds != 0:
                 past_rate_adjustment_ratio = float(past_rate_target_seconds) / float(past_rate_actual_seconds)
@@ -133,10 +133,137 @@ class KGW(object):
             new_target *= past_rate_actual_seconds
             new_target /= past_rate_target_seconds
 
-        new_target = min(int(new_target), self.max_target)
+        new_target = min(self.max_target, int(new_target))
         new_nbits = self.target2nbits(new_target)
+
+        return new_nbits, new_target
+
+    def get_target(self, chain=None):
+        if chain is None or len(chain) == 0:
+            return self.genesis_nbits, self.genesis_target
+
+        last_block = chain[-1]
+        last_height = last_block.get('block_height')
+        next_height = last_height + 1
+
+        past_blocks_min, past_blocks_max = self.past_blocks(next_height)
+
+        if last_height < past_blocks_min:
+            return self.max_nbits, self.max_target
+
+        # PoSV diff reset
+        if 0 <= (last_height - self.last_pow_block) < past_blocks_min:
+            return self.posv_reset_nbits, self.posv_reset_target
+
+        first_block = chain[0]
+        first_height = first_block.get('block_height')
+
+        # truncate from the first PoSV block
+        if first_height <= self.last_pow_block < last_height:
+            chain = chain[(self.last_pow_block - first_height + 1):]
+
+        # too many blocks provided?
+        if len(chain) > past_blocks_max:
+            chain = chain[-past_blocks_max:]
+
+        blocks_mass_range = np.arange(1, len(chain)+1)
+        event_horizon_fast = 1 + (0.7084 * np.power(blocks_mass_range / 144.0, -1.228))
+        event_horizon_slow = 1.0 / event_horizon_fast
+
+        chain_target = np.array(map(self.nbits2target, [c.get('bits') for c in chain]))
+        chain_gap = np.insert(np.diff(np.array([c.get('timestamp') for c in chain])), 0, 0)
+
+        past_rate_actual_gaps = np.roll(chain_gap[::-1], 1)
+        past_rate_actual_gaps[0] = 0
+        past_rate_actual_seconds = np.maximum(0.0, np.cumsum(past_rate_actual_gaps))
+        past_rate_target_seconds = 60 * blocks_mass_range
+        past_rate_adjustment_ratio = past_rate_target_seconds / past_rate_actual_seconds
+        past_rate_adjustment_ratio[0] = 1.0
+
+        ratio = past_rate_adjustment_ratio[(past_blocks_min-1):]
+        slow = event_horizon_slow[(past_blocks_min-1):(past_blocks_min+len(ratio)-1)]
+        fast = event_horizon_fast[(past_blocks_min-1):(past_blocks_min+len(ratio)-1)]
+
+        adjustment_indices = np.logical_or(ratio <= slow, ratio >= fast)
+        if np.any(adjustment_indices):
+            adjustment_index = np.arange(len(adjustment_indices))[adjustment_indices][0]
+        else:
+            adjustment_index = len(ratio) - 1
+
+        adjustment_ratio = ratio[adjustment_index]
+
+        past_target_average = np.mean(chain_target[-(adjustment_index+past_blocks_min):])
+        new_target = min(self.max_target, int(past_target_average / adjustment_ratio))
+        new_nbits = self.target2nbits(new_target)
+
         return new_nbits, new_target
 
     def get_chain_target(self, prev_chain, chain):
         full_chain = prev_chain + chain
-        return [self.get_target(full_chain[:i]) for i in range(len(prev_chain)+1, len(full_chain))]
+        full_target = np.array(map(self.nbits2target, [c.get('bits') for c in full_chain]))
+        full_gap = np.insert(np.diff(np.array([c.get('timestamp') for c in full_chain])), 0, 0)
+
+        first_height = full_chain[0].get('block_height')
+
+        # calculation that can be done just once
+        blocks_mass_range = np.arange(1, len(full_chain)+1)
+        event_horizon_fast = 1 + (0.7084 * np.power(blocks_mass_range / 144.0, -1.228))
+        event_horizon_slow = 1.0 / event_horizon_fast
+
+        # next_height specific
+        results = []
+        for next_height in [c.get('block_height') for c in chain]:
+            if next_height == 0:
+                results.append((self.genesis_nbits, self.genesis_target))
+                continue
+
+            last_height = next_height - 1
+            past_blocks_min, past_blocks_max = self.past_blocks(next_height)
+
+            if last_height < past_blocks_min:
+                results.append((self.max_nbits, self.max_target))
+                continue
+
+            # PoSV diff reset
+            if 0 <= (last_height - self.last_pow_block) < past_blocks_min:
+                results.append((self.posv_reset_nbits, self.posv_reset_target))
+                continue
+
+            if first_height <= self.last_pow_block < last_height:
+                # # truncate from the first PoSV block
+                past_blocks_index = np.arange(next_height - past_blocks_max, next_height) - self.last_pow_block - 1
+            else:
+                past_blocks_index = np.arange(next_height - past_blocks_max, next_height) - first_height
+
+            past_blocks_index = past_blocks_index[past_blocks_index >= 0]
+            past_blocks_mass_range = np.arange(1, len(past_blocks_index)+1)
+            chain_target = full_target[past_blocks_index]
+            chain_gap = full_gap[past_blocks_index]
+
+            # Below are indexed by past_blocks_mass_range
+            past_rate_actual_gaps = np.roll(chain_gap[::-1], 1)
+            past_rate_actual_gaps[0] = 0
+
+            past_rate_actual_seconds = np.maximum(0.0, np.cumsum(past_rate_actual_gaps))
+            past_rate_target_seconds = 60 * past_blocks_mass_range
+            past_rate_adjustment_ratio = past_rate_target_seconds / past_rate_actual_seconds
+            past_rate_adjustment_ratio[0] = 1.0
+
+            ratio = past_rate_adjustment_ratio[(past_blocks_min-1):]
+            slow = event_horizon_slow[(past_blocks_min-1):(past_blocks_min+len(ratio)-1)]
+            fast = event_horizon_fast[(past_blocks_min-1):(past_blocks_min+len(ratio)-1)]
+
+            adjustment_indices = np.logical_or(ratio <= slow, ratio >= fast)
+            if np.any(adjustment_indices):
+                adjustment_index = np.arange(len(adjustment_indices))[adjustment_indices][0]
+            else:
+                adjustment_index = len(ratio) - 1
+
+            adjustment_ratio = ratio[adjustment_index]
+
+            past_target_average = np.mean(chain_target[-(adjustment_index+past_blocks_min):])
+            new_target = min(self.max_target, int(past_target_average / adjustment_ratio))
+            new_nbits = self.target2nbits(new_target)
+            results.append((new_nbits, new_target))
+
+        return results

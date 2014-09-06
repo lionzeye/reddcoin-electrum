@@ -58,7 +58,8 @@ os.system("pip install http://download.electrum.org/tlslite-0.4.5.tar.gz")
 setup(
     name="Electrum",
     version=version.ELECTRUM_VERSION,
-    install_requires=['slowaes', 'ecdsa>=0.9', 'pbkdf2', 'requests', 'pyasn1', 'pyasn1-modules', 'qrcode', 'tlslite'],
+    install_requires=['slowaes', 'ecdsa>=0.9', 'pbkdf2', 'requests', 'pyasn1', 'pyasn1-modules', 'qrcode', 'tlslite',
+                      'numpy'],
     package_dir={
         'electrum': 'lib',
         'electrum_gui': 'gui',
