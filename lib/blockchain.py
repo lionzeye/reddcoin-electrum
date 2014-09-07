@@ -20,6 +20,7 @@
 import threading, time, Queue, os, sys, shutil, traceback
 from util import user_dir, appdata_dir, print_error
 from bitcoin import *
+from ltc_scrypt import getPoWHash
 from kgw import KGW
 
 
@@ -116,7 +117,6 @@ class Blockchain(threading.Thread):
             height = header.get('block_height')
             prev_hash = self.hash_header(prev_header)
             bits, target = chain_target[i]
-            _hash = self.hash_header(header)
 
             if prev_hash != header.get('prev_block_hash'):
                 print_error("height %d: prev_hash mismatch" % height)
@@ -126,9 +126,12 @@ class Blockchain(threading.Thread):
                 print_error("height %d: bits mismatch %u vs %u" % (height, bits, header.get('bits')))
                 return False
 
-            if int('0x'+_hash, 16) >= target:
-                print_error("height %d: hash >= target")
-                return False
+            if height <= self.kgw.last_pow_block:
+                _hash = self.pow_hash_header(header)
+
+                if int('0x'+_hash, 16) >= target:
+                    print_error("height %d: PoW hash >= target" % height)
+                    return False
 
             prev_header = header
 
@@ -169,6 +172,9 @@ class Blockchain(threading.Thread):
 
     def hash_header(self, header):
         return rev_hex(Hash(self.header_to_string(header).decode('hex')).encode('hex'))
+
+    def pow_hash_header(self, header):
+        return rev_hex(getPoWHash(self.header_to_string(header).decode('hex')).encode('hex'))
 
     def path(self):
         return os.path.join(self.config.path, 'blockchain_headers')
