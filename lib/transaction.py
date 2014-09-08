@@ -32,6 +32,7 @@ import struct
 import struct
 import StringIO
 import mmap
+from datetime import datetime
 
 NO_SIGNATURE = 'ff'
 
@@ -481,7 +482,11 @@ def deserialize(raw):
     d['outputs'] = []
     for i in xrange(n_vout):
         d['outputs'].append(parse_output(vds, i))
-    d['lockTime'] = vds.read_uint32()
+    d['locktime'] = vds.read_uint32()
+    if d['version'] >= 2:
+        d['time'] = vds.read_uint32()
+    else:
+        d['time'] = 0
     return d
 
 
@@ -492,13 +497,15 @@ class Transaction:
 
     def __str__(self):
         if self.raw is None:
-            self.raw = self.serialize(self.inputs, self.outputs, for_sig=None)  # for_sig=-1 means do not sign
+            self.raw = self.serialize(for_sig=None)  # for_sig=-1 means do not sign
         return self.raw
 
     def __init__(self, inputs, outputs, locktime=0):
+        self.version = 2
         self.inputs = inputs
         self.outputs = outputs
         self.locktime = locktime
+        self.time = int(datetime.utcnow().strftime("%s"))
         self.raw = None
 
     @classmethod
@@ -510,9 +517,11 @@ class Transaction:
     def update(self, raw):
         d = deserialize(raw)
         self.raw = raw
+        self.version = d['version']
         self.inputs = d['inputs']
         self.outputs = map(lambda x: (x['type'], x['address'], x['value']), d['outputs'])
-        self.locktime = d['lockTime']
+        self.locktime = d['locktime']
+        self.time = d['time']
 
     @classmethod
     def sweep(cls, privkeys, network, to_address, fee):
@@ -546,7 +555,7 @@ class Transaction:
         # supports only "2 of 2", and "2 of 3" transactions
         assert num <= n and n in [2, 3]
 
-        if num==2:
+        if num == 2:
             s = '52'
         elif num == 3:
             s = '53'
@@ -556,9 +565,9 @@ class Transaction:
         for k in public_keys:
             s += op_push(len(k)/2)
             s += k
-        if n==2:
+        if n == 2:
             s += '52'
-        elif n==3:
+        elif n == 3:
             s += '53'
         else:
             raise
@@ -574,7 +583,7 @@ class Transaction:
         else:
             assert type == 'address'
         addrtype, hash_160 = bc_address_to_hash_160(addr)
-        if addrtype == 0:
+        if addrtype == 61:
             script = '76a9'                                      # op_dup, op_hash_160
             script += push_script(hash_160.encode('hex'))
             script += '88ac'                                     # op_equalverify, op_checksig
@@ -586,15 +595,14 @@ class Transaction:
             raise
         return script
 
-    @classmethod
-    def serialize(cls, inputs, outputs, for_sig=None):
-        s = int_to_hex(1, 4)                                         # version
-        s += var_int(len(inputs))                                    # number of inputs
-        for i in range(len(inputs)):
-            txin = inputs[i]
+    def serialize(self, for_sig=None):
+        s = int_to_hex(self.version, 4)                                   # version
+        s += var_int(len(self.inputs))                                    # number of inputs
+        for i in range(len(self.inputs)):
+            txin = self.inputs[i]
 
             s += txin['prevout_hash'].decode('hex')[::-1].encode('hex')   # prev hash
-            s += int_to_hex(txin['prevout_n'], 4)                          # prev index
+            s += int_to_hex(txin['prevout_n'], 4)                         # prev index
 
             p2sh = txin.get('redeemScript') is not None
             num_sig = txin['num_sig']
@@ -624,31 +632,33 @@ class Transaction:
                 else:
                     script = '00'                                    # op_0
                     script += sig_list
-                    redeem_script = cls.multisig_script(pubkeys, 2)
+                    redeem_script = self.multisig_script(pubkeys, 2)
                     script += push_script(redeem_script)
 
-            elif for_sig==i:
-                script = txin['redeemScript'] if p2sh else cls.pay_script('address', address)
+            elif for_sig == i:
+                script = txin['redeemScript'] if p2sh else self.pay_script('address', address)
             else:
                 script = ''
             s += var_int(len(script)/2)                              # script length
             s += script
             s += "ffffffff"                                          # sequence
 
-        s += var_int(len(outputs))                                   # number of outputs
-        for output in outputs:
+        s += var_int(len(self.outputs))                              # number of outputs
+        for output in self.outputs:
             type, addr, amount = output
             s += int_to_hex(amount, 8)                               # amount
-            script = cls.pay_script(type, addr)
+            script = self.pay_script(type, addr)
             s += var_int(len(script)/2)                              # script length
             s += script                                              # script
-        s += int_to_hex(0, 4)                                        # lock time
+        s += int_to_hex(self.locktime, 4)                            # lock time
+        if self.version >= 2:
+            s += int_to_hex(self.time, 4)                            # time
         if for_sig is not None and for_sig != -1:
             s += int_to_hex(1, 4)                                    # hash type
         return s
 
     def tx_for_sig(self, i):
-        return self.serialize(self.inputs, self.outputs, for_sig=i)
+        return self.serialize(for_sig=i)
 
     def hash(self):
         return Hash(self.raw.decode('hex'))[::-1].encode('hex')
@@ -661,7 +671,7 @@ class Transaction:
         txin['signatures'][ii] = sig
         txin['x_pubkeys'][ii] = pubkey
         self.inputs[i] = txin
-        self.raw = self.serialize(self.inputs, self.outputs)
+        self.raw = self.serialize()
 
     def signature_count(self):
         r = 0
@@ -733,7 +743,7 @@ class Transaction:
                     self.add_signature(i, pubkey, sig.encode('hex'))
 
         print_error("is_complete", self.is_complete())
-        self.raw = self.serialize(self.inputs, self.outputs)
+        self.raw = self.serialize()
 
     def add_pubkey_addresses(self, txlist):
         for i in self.inputs:
