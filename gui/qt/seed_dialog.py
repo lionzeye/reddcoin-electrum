@@ -30,7 +30,7 @@ class SeedDialog(QDialog):
         QDialog.__init__(self, parent)
         self.setModal(1)
         self.setMinimumWidth(400)
-        self.setWindowTitle('Electrum' + ' - ' + _('Seed'))
+        self.setWindowTitle('Reddcoin Electrum' + ' - ' + _('Seed'))
         vbox = show_seed_box(seed)
         if imported_keys:
             vbox.addWidget(QLabel("<b>"+_("WARNING")+":</b> " + _("Your wallet contains imported keys. These keys cannot be recovered from seed.") + "</b><p>"))
@@ -56,18 +56,18 @@ def show_seed_box(seed, sid=None):
     warning_msg = "<b>"+_("WARNING")+":</b> " + _("Never disclose your seed. Never type it on a website.") + "</b><p>"
 
     if sid is None:
-        msg =  _("Your wallet generation seed is")
+        msg = _("Your wallet generation seed is")
         msg2 = save_msg + " " \
                + _("This seed will allow you to recover your wallet in case of computer failure.") + "<br/>" \
                + warning_msg
         
     elif sid == 'cold':
-        msg =  _("Your cold storage seed is")
+        msg = _("Your cold storage seed is")
         msg2 = save_msg + " " \
-               + _("This seed will be permanently deleted from your wallet file. Make sure you have saved it before you press 'next'") + " " \
-            
+               + _("This seed will be permanently deleted from your wallet file. Make sure you have saved it before you press 'next'") + " "
+
     elif sid == 'hot':
-        msg =  _("Your hot seed is")
+        msg = _("Your hot seed is")
         msg2 = save_msg + " " \
                + _("If you ever need to recover your wallet from seed, you will need both this seed and your cold seed.") + " " \
 
