@@ -1,9 +1,10 @@
-Electrum - lightweight Bitcoin client
+Reddcoin Electrum Client - reference implementation
 
 Licence: GNU GPL v3
 Author: Thomas Voegtlin
+Author: Larry Ren (laudney) forked for Reddcoin
 Language: Python
-Homepage: https://electrum.org/
+Homepage: http://reddwallet.org/
 
 
 1. GETTING STARTED
@@ -18,11 +19,6 @@ directory:
 
   sudo python setup.py install
   electrum
-
-
-To start Electrum from your web browser, see
-http://electrum.org/bitcoin_URIs.html
-
 
 
 2. HOW OFFICIAL PACKAGES ARE CREATED
@@ -40,6 +36,6 @@ On Mac OS X:
   # On brew installs
   ARCHFLAGS="-arch i386 -arch x86_64" sudo python setup-release.py py2app --includes sip
 
-  sudo hdiutil create -fs HFS+ -volname "Electrum" -srcfolder dist/Electrum.app dist/electrum-VERSION-macosx.dmg
+  sudo hdiutil create -fs HFS+ -volname "Reddcoin Electrum" -srcfolder dist/Electrum.app dist/electrum-VERSION-macosx.dmg
 
 
