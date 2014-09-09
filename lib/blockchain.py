@@ -34,7 +34,7 @@ class Blockchain(threading.Thread):
         self.lock = threading.Lock()
         self.local_height = 0
         self.running = False
-        self.headers_url = 'http://headers.reddwallet.com/blockchain_headers'
+        self.headers_url = 'http://headers.reddwallet.org/blockchain_headers'
         self.chunk_size = 2016
         self.header_size = 80
         self.kgw = KGW()
