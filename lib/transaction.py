@@ -843,19 +843,15 @@ class Transaction:
 
     def requires_fee(self, verifier):
         # see https://en.bitcoin.it/wiki/Transaction_fees
-        threshold = 57600000
+        # Reddcoin has 1440 blocks a day vs 144 blocks a day for Bitcoin
+        threshold = 100000000 * 1440 / 250
         size = len(str(self))/2
-        if size >= 10000:
-            return True
 
-        for o in self.get_outputs():
-            value = o[1]
-            if value < 1000000:
-                return True
         sum = 0
         for i in self.inputs:
             age = verifier.get_confirmations(i["prevout_hash"])[0]
             sum += i["value"] * age
+
         priority = sum / size
         print_error(priority, threshold)
-        return priority < threshold 
+        return priority <= threshold
