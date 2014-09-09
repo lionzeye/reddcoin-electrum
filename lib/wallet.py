@@ -487,7 +487,7 @@ class Abstract_Wallet(object):
                 addr = item.get('address')
                 if addr == address:
                     key = item['prevout_hash'] + ':%d' % item['prevout_n']
-                    value = self.prevout_values.get( key )
+                    value = self.prevout_values.get(key)
                     if key in received_coins:
                         v -= value
 
@@ -605,7 +605,7 @@ class Abstract_Wallet(object):
         fee = self.fee * int(math.ceil(estimated_size/1000.))
         return fee
 
-    def add_tx_change( self, inputs, outputs, amount, fee, total, change_addr=None):
+    def add_tx_change(self, inputs, outputs, amount, fee, total, change_addr=None):
         """add change to a transaction"""
         change_amount = total - (amount + fee)
         if change_amount > DUST_THRESHOLD:
@@ -745,7 +745,7 @@ class Abstract_Wallet(object):
 
         return default_label
 
-    def make_unsigned_transaction(self, outputs, fee=None, change_addr=None, domain=None, coins=None ):
+    def make_unsigned_transaction(self, outputs, fee=None, change_addr=None, domain=None, coins=None):
         for type, address, x in outputs:
             if type == 'op_return':
                 continue
@@ -776,7 +776,7 @@ class Abstract_Wallet(object):
         pubkeys = account.get_pubkeys(*sequence)
         x_pubkeys = account.get_xpubkeys(*sequence)
         # sort pubkeys and x_pubkeys, using the order of pubkeys
-        pubkeys, x_pubkeys = zip( *sorted(zip(pubkeys, x_pubkeys)))
+        pubkeys, x_pubkeys = zip(*sorted(zip(pubkeys, x_pubkeys)))
         txin['pubkeys'] = list(pubkeys)
         txin['x_pubkeys'] = list(x_pubkeys)
         txin['signatures'] = [None] * len(pubkeys)
@@ -1008,7 +1008,7 @@ class Abstract_Wallet(object):
         pass
 
     def is_watching_only(self):
-        False
+        return False
 
     def can_change_password(self):
         return not self.is_watching_only()
@@ -1148,7 +1148,7 @@ class Deterministic_Wallet(Abstract_Wallet):
             if len(addresses) < limit:
                 self.create_new_address(account, for_change)
                 continue
-            if map( lambda a: self.address_is_old(a), addresses[-limit:]) == limit*[False]:
+            if map(lambda a: self.address_is_old(a), addresses[-limit:]) == limit*[False]:
                 break
             else:
                 self.create_new_address(account, for_change)
@@ -1222,7 +1222,7 @@ class Deterministic_Wallet(Abstract_Wallet):
         out = {}
         for k, account in self.accounts.items():
             name = self.get_account_name(k)
-            mpk_text = '\n\n'.join( account.get_master_pubkeys() )
+            mpk_text = '\n\n'.join(account.get_master_pubkeys())
             out[name] = mpk_text
         return out
 
@@ -1478,92 +1478,7 @@ class Wallet_2of3(Wallet_2of2):
             return 'create_accounts'
 
 
-class OldWallet(Deterministic_Wallet):
-    wallet_type = 'old'
-    gap_limit = 5
-
-    def __init__(self, storage):
-        Deterministic_Wallet.__init__(self, storage)
-        self.gap_limit = storage.get('gap_limit', 5)
-
-    def make_seed(self):
-        import old_mnemonic
-        seed = random_seed(128)
-        return ' '.join(old_mnemonic.mn_encode(seed))
-
-    def prepare_seed(self, seed):
-        import old_mnemonic
-        # see if seed was entered as hex
-        seed = seed.strip()
-        try:
-            assert seed
-            seed.decode('hex')
-            return OLD_SEED_VERSION, str(seed)
-        except Exception:
-            pass
-
-        words = seed.split()
-        seed = old_mnemonic.mn_decode(words)
-        if not seed:
-            raise Exception("Invalid seed")
-
-        return OLD_SEED_VERSION, seed
-
-    def create_master_keys(self, password):
-        seed = self.get_seed(password)
-        mpk = OldAccount.mpk_from_seed(seed)
-        self.storage.put('master_public_key', mpk, True)
-
-    def get_master_public_key(self):
-        return self.storage.get("master_public_key")
-
-    def get_master_public_keys(self):
-        return {'Main Account': self.get_master_public_key()}
-
-    def create_main_account(self, password):
-        mpk = self.storage.get("master_public_key")
-        self.create_account(mpk)
-
-    def create_account(self, mpk):
-        self.accounts['0'] = OldAccount({'mpk': mpk, 0: [], 1: []})
-        self.save_accounts()
-
-    def create_watching_only_wallet(self, mpk):
-        self.seed_version = OLD_SEED_VERSION
-        self.storage.put('seed_version', self.seed_version, True)
-        self.storage.put('master_public_key', mpk, True)
-        self.create_account(mpk)
-
-    def get_seed(self, password):
-        seed = pw_decode(self.seed, password).encode('utf8')
-        return seed
-
-    def check_password(self, password):
-        seed = self.get_seed(password)
-        self.accounts['0'].check_seed(seed)
-
-    def get_mnemonic(self, password):
-        import old_mnemonic
-        s = self.get_seed(password)
-        return ' '.join(old_mnemonic.mn_encode(s))
-
-    def can_sign(self, tx):
-        if self.is_watching_only():
-            return False
-        if tx.is_complete():
-            return False
-        addr_list, xpub_list = tx.inputs_to_sign()
-        for addr in addr_list:
-            if self.is_mine(addr):
-                return True
-        for xpub, sequence in xpub_list:
-            if xpub == self.master_public_key:
-                return True
-        return False
-
-
-wallet_types = [ 
-    ('old',      ("Old wallet"),               OldWallet),
+wallet_types = [
     ('xpub',     ("BIP32 Import"),             BIP32_Simple_Wallet),
     ('standard', ("Standard wallet"),          NewWallet),
     ('imported', ("Imported wallet"),          Imported_Wallet),
