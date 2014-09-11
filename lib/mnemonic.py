@@ -62,7 +62,7 @@ class Mnemonic(object):
     @classmethod
     def mnemonic_to_seed(cls, mnemonic, passphrase):
         PBKDF2_ROUNDS = 2048
-        mnemonic = self.prepare_seed(mnemonic)
+        mnemonic = cls.prepare_seed(mnemonic)
         return pbkdf2.PBKDF2(mnemonic, 'mnemonic' + passphrase, iterations=PBKDF2_ROUNDS,
                              macmodule=hmac, digestmodule=hashlib.sha512).read(64)
 

@@ -688,7 +688,7 @@ class ElectrumWindow(QMainWindow):
         grid.addWidget(self.receive_message_e, 1, 1, 1, 3)
         self.receive_message_e.textChanged.connect(self.update_receive_qr)
 
-        self.receive_amount_e = RDDAmountEdit(self.get_decimal_point)
+        self.receive_amount_e = RDDAmountEdit()
         grid.addWidget(QLabel(_('Requested amount')), 2, 0)
         grid.addWidget(self.receive_amount_e, 2, 1, 1, 2)
         self.receive_amount_e.textChanged.connect(self.update_receive_qr)
@@ -852,7 +852,7 @@ class ElectrumWindow(QMainWindow):
         grid.setRowStretch(8, 1)
 
         from paytoedit import PayToEdit
-        self.amount_e = RDDAmountEdit(self.get_decimal_point)
+        self.amount_e = RDDAmountEdit()
         self.payto_e = PayToEdit(self)
         self.payto_help = HelpButton(_('Recipient of the funds.') + '\n\n' + _('You may enter a Reddcoin address, a label from your list of contacts (a list of completions will be proposed), or an alias (email-like address that forwards to a Reddcoin address)'))
         grid.addWidget(QLabel(_('Pay to')), 1, 0)
@@ -891,7 +891,7 @@ class ElectrumWindow(QMainWindow):
         grid.addWidget(self.amount_help, 4, 3)
 
         self.fee_e_label = QLabel(_('Fee'))
-        self.fee_e = RDDAmountEdit(self.get_decimal_point)
+        self.fee_e = RDDAmountEdit()
         grid.addWidget(self.fee_e_label, 5, 0)
         grid.addWidget(self.fee_e, 5, 1, 1, 2)
         msg = _('Reddcoin transactions are in general not free. A transaction fee is paid by the sender of the funds.') + '\n\n'\
@@ -2556,7 +2556,7 @@ class ElectrumWindow(QMainWindow):
 
         fee_label = QLabel(_('Transaction fee per kb') + ':')
         fee_help = HelpButton(_('Fee per kilobyte of transaction.') + '\n' + _('Recommended value') + ': ' + self.format_amount(1000000) + ' ' + self.base_unit())
-        fee_e = RDDAmountEdit(self.get_decimal_point)
+        fee_e = RDDAmountEdit()
         fee_e.setAmount(self.wallet.fee_per_kb)
         if not self.config.is_modifiable('fee_per_kb'):
             for w in [fee_e, fee_label]: w.setEnabled(False)
