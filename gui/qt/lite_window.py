@@ -713,10 +713,6 @@ class MiniActuator:
             password = None
 
         fee = 0
-        # 0.1 BTC = 10000000
-        if amount < reddcoin(1) / 10:
-            # 0.001 BTC
-            fee = reddcoin(1) / 1000
 
         try:
             tx = self.g.wallet.mktx([(dest_address, amount)], password, fee)

@@ -8,7 +8,7 @@ from collections import defaultdict
 # electrum.util.set_verbosity(1)
 
 # 1. start interface and wait for connection
-interface = electrum.Interface('reddwallet.com:110:s')
+interface = electrum.Interface('reddwallet.org:110:s')
 q = Queue.Queue()
 interface.start(q)
 
