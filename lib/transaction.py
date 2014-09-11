@@ -98,6 +98,8 @@ class BCDataStream(object):
         except IndexError:
             raise SerializationError("attempt to read past end of buffer")
 
+        return ''
+
     def read_boolean(self): return self.read_bytes(1)[0] != chr(0)
     def read_int16(self): return self._read_num('<h')
     def read_uint16(self): return self._read_num('<H')
@@ -613,6 +615,7 @@ class Transaction:
 
         inputs = self.inputs
         outputs = self.outputs
+
         s = int_to_hex(self.version, 4)                                   # version
         s += var_int(len(inputs))                                         # number of inputs
         for i in range(len(inputs)):
@@ -665,8 +668,8 @@ class Transaction:
             s += script
             s += "ffffffff"                                          # sequence
 
-        s += var_int(len(self.outputs))                              # number of outputs
-        for output in self.outputs:
+        s += var_int(len(outputs))                                   # number of outputs
+        for output in outputs:
             type, addr, amount = output
             s += int_to_hex(amount, 8)                               # amount
             script = self.pay_script(type, addr)
@@ -885,7 +888,7 @@ class Transaction:
         # see https://en.bitcoin.it/wiki/Transaction_fees
         # Reddcoin has 1440 blocks a day vs 144 blocks a day for Bitcoin
         threshold = 100000000 * 1440 / 250
-        size = len(str(self))/2
+        size = len(self.serialize(-1)) / 2
 
         sum = 0
         for i in self.inputs:
