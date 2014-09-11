@@ -767,7 +767,11 @@ class Transaction:
                 continue
 
             redeem_pubkeys = txin['pubkeys']
-            for_sig = Hash(self.tx_for_sig(i).decode('hex'))
+
+            # signature for input skips nTime
+            hex_sig = self.tx_for_sig(i)
+            for_sig = Hash((hex_sig[:-16] + hex_sig[-8:]).decode('hex'))
+
             for pubkey in redeem_pubkeys:
                 if pubkey in keypairs.keys():
                     # add signature
