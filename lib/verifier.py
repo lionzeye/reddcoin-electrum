@@ -147,7 +147,7 @@ class TxVerifier(threading.Thread):
         h = hash_decode(target_hash)
         for i in range(len(merkle_s)):
             item = merkle_s[i]
-            h = Hash( hash_decode(item) + h) if ((pos >> i) & 1) else Hash(h + hash_decode(item))
+            h = Hash(hash_decode(item) + h) if ((pos >> i) & 1) else Hash(h + hash_decode(item))
         return hash_encode(h)
 
     def undo_verifications(self, height):
