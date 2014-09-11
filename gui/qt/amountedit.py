@@ -16,6 +16,7 @@ class MyLineEdit(QLineEdit):
 
 
 class AmountEdit(MyLineEdit):
+    shortcut = pyqtSignal()
     def __init__(self, base_unit, is_int = False, parent=None):
         QLineEdit.__init__(self, parent)
         self.base_unit = base_unit
@@ -30,7 +31,8 @@ class AmountEdit(MyLineEdit):
     def numbify(self):
         text = unicode(self.text()).strip()
         if text == '!':
-            self.is_shortcut = True
+            self.shortcut.emit()
+            return
         pos = self.cursorPosition()
         chars = '0123456789'
         if not self.is_int: chars +='.'

@@ -132,8 +132,8 @@ class Commands:
 
     def make_seed(self, nbits, custom_entropy, language):
         from mnemonic import Mnemonic
-        s = Mnemonic(language).make_seed(nbits, custom_entropy)
-        return s
+        s = Mnemonic(language).make_seed(nbits, custom_entropy=custom_entropy)
+        return s.encode('utf8')
 
     def check_seed(self, seed, custom_entropy, language):
         from mnemonic import Mnemonic
@@ -244,8 +244,8 @@ class Commands:
         return self.wallet.get_master_public_keys()
 
     def getseed(self):
-        mnemonic = self.wallet.get_mnemonic(self.password)
-        return {'mnemonic': mnemonic, 'version': self.wallet.seed_version}
+        s = self.wallet.get_mnemonic(self.password)
+        return s.encode('utf8')
 
     def importprivkey(self, sec):
         try:

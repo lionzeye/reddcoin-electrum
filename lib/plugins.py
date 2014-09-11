@@ -43,6 +43,8 @@ def run_hook(name, *args):
     results = []
     f_list = hooks.get(name,[])
     for p, f in f_list:
+        if name == 'load_wallet':
+            p.wallet = args[0]
         if not p.is_enabled():
             continue
         try:
@@ -79,16 +81,6 @@ class BasePlugin:
 
     def requires_settings(self):
         return False
-
-    def toggle(self):
-        if self.is_enabled():
-            if self.disable():
-                self.close()
-        else:
-            if self.enable():
-                self.init()
-
-        return self.is_enabled()
     
     def enable(self):
         self.set_enabled(True)
@@ -98,7 +90,11 @@ class BasePlugin:
         self.set_enabled(False)
         return True
 
-    def init(self): pass
+    def init_qt(self, gui): pass
+
+    def load_wallet(self, wallet): pass
+
+    #def init(self): pass
 
     def close(self): pass
 

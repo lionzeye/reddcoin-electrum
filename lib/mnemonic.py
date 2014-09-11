@@ -20,23 +20,36 @@ import os
 import hmac
 import math
 import hashlib
+import unicodedata
+import string
 
 import ecdsa
 import pbkdf2
 
 from util import print_error
 from bitcoin import is_old_seed, is_new_seed
+import version
+
+
+filenames = {
+    'en':'english.txt',
+    'es':'spanish.txt',
+    'ja':'japanese.txt',
+    'pt':'portuguese.txt',
+}
+
 
 
 class Mnemonic(object):
-    # Seed derivation follows BIP39
+    # Seed derivation no longer follows BIP39
     # Mnemonic phrase uses a hash based checksum, instead of a wordlist-dependent checksum
 
-    def __init__(self, lang=None):
-        if lang is None:
-            lang = 'english'
-        path = os.path.join(os.path.dirname(__file__), 'wordlist', lang + '.txt')
-        lines = open(path, 'r').read().strip().split('\n')
+    def __init__(self, lang='en'):
+        filename = filenames.get(lang[0:2], 'english.txt')
+        path = os.path.join(os.path.dirname(__file__), 'wordlist', filename)
+        s = open(path,'r').read().strip()
+        s = unicodedata.normalize('NFKD', s.decode('utf8'))
+        lines = s.split('\n')
         self.wordlist = []
         for line in lines:
             line = line.split('#')[0]
@@ -54,8 +67,11 @@ class Mnemonic(object):
 
     @classmethod
     def prepare_seed(cls, seed):
-        import unicodedata
-        return unicodedata.normalize('NFC', unicode(seed.strip()))
+        # normalize
+        seed = unicodedata.normalize('NFKD', unicode(seed))
+        # remove accents and whitespaces
+        seed = u''.join([c for c in seed if not unicodedata.combining(c) and not c in string.whitespace])
+        return seed
 
     def mnemonic_encode(self, i):
         n = len(self.wordlist)
@@ -81,11 +97,13 @@ class Mnemonic(object):
         i = self.mnemonic_decode(seed)
         return i % custom_entropy == 0
 
-    def make_seed(self, num_bits=128, custom_entropy=1):
+    def make_seed(self, num_bits=128, prefix=version.SEED_BIP44, custom_entropy=1):
         n = int(math.ceil(math.log(custom_entropy, 2)))
+        # bits of entropy used by the prefix
+        k = len(prefix)*4
         # we add at least 16 bits
-        n_added = max(16, 8 + num_bits - n)
-        print_error("make_seed: adding %d bits" % n_added)
+        n_added = max(16, k + num_bits - n)
+        print_error("make_seed", prefix, "adding %d bits"%n_added)
         my_entropy = ecdsa.util.randrange(pow(2, n_added))
         nonce = 0
         while True:
@@ -95,8 +113,7 @@ class Mnemonic(object):
             assert i == self.mnemonic_decode(seed)
             if is_old_seed(seed):
                 continue
-            # this removes 8 bits of entropy
-            if is_new_seed(seed):
+            if is_new_seed(seed, prefix):
                 break
         print_error('%d words' % len(seed.split()))
         return seed

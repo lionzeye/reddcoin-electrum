@@ -32,6 +32,7 @@ import struct
 import struct
 import StringIO
 import mmap
+import random
 from datetime import datetime
 
 NO_SIGNATURE = 'ff'
@@ -433,6 +434,11 @@ def get_address_from_output_script(bytes):
     if match_decoded(decoded, match):
         return 'address', hash_160_to_bc_address(decoded[1][1], 5)
 
+    # OP_RETURN
+    match = [ opcodes.OP_RETURN, opcodes.OP_PUSHDATA4 ]
+    if match_decoded(decoded, match):
+        return 'op_return', decoded[1][1]
+
     return "(None)", "(None)"
 
 
@@ -497,7 +503,7 @@ class Transaction:
 
     def __str__(self):
         if self.raw is None:
-            self.raw = self.serialize(for_sig=None)  # for_sig=-1 means do not sign
+            self.raw = self.serialize()
         return self.raw
 
     def __init__(self, inputs, outputs, locktime=0):
@@ -522,7 +528,6 @@ class Transaction:
         self.outputs = map(lambda x: (x['type'], x['address'], x['value']), d['outputs'])
         self.locktime = d['locktime']
         self.time = d['time']
-
     @classmethod
     def sweep(cls, privkeys, network, to_address, fee):
         inputs = []
@@ -537,6 +542,10 @@ class Transaction:
                 item['address'] = address
                 item['prevout_hash'] = item['tx_hash']
                 item['prevout_n'] = item['tx_pos']
+                item['pubkeys'] = [pubkey]
+                item['x_pubkeys'] = [None]
+                item['signatures'] = [None]
+                item['num_sig'] = 1
             inputs += u
 
         if not inputs:
@@ -596,10 +605,17 @@ class Transaction:
         return script
 
     def serialize(self, for_sig=None):
+        # for_sig:
+        #   -1   : do not sign, estimate length
+        #   i>=0 : sign input i
+        #   None : add all signatures
+
+        inputs = self.inputs
+        outputs = self.outputs
         s = int_to_hex(self.version, 4)                                   # version
-        s += var_int(len(self.inputs))                                    # number of inputs
-        for i in range(len(self.inputs)):
-            txin = self.inputs[i]
+        s += var_int(len(inputs))                                         # number of inputs
+        for i in range(len(inputs)):
+            txin = inputs[i]
 
             s += txin['prevout_hash'].decode('hex')[::-1].encode('hex')   # prev hash
             s += int_to_hex(txin['prevout_n'], 4)                         # prev index
@@ -612,11 +628,15 @@ class Transaction:
             signatures = filter(lambda x: x is not None, x_signatures)
             is_complete = len(signatures) == num_sig
 
-            if for_sig is None:
+            if for_sig in [-1, None]:
                 # if we have enough signatures, we use the actual pubkeys
                 # use extended pubkeys (with bip32 derivation)
                 sig_list = []
-                if is_complete:
+                if for_sig == -1:
+                    # we assume that signature will be 0x48 bytes long
+                    pubkeys = txin['pubkeys']
+                    sig_list = [ "00"* 0x48 ] * num_sig
+                elif is_complete:
                     pubkeys = txin['pubkeys']
                     for signature in signatures:
                         sig_list.append(signature + '01')
@@ -639,6 +659,7 @@ class Transaction:
                 script = txin['redeemScript'] if p2sh else self.pay_script('address', address)
             else:
                 script = ''
+
             s += var_int(len(script)/2)                              # script length
             s += script
             s += "ffffffff"                                          # sequence
@@ -672,6 +693,18 @@ class Transaction:
         txin['x_pubkeys'][ii] = pubkey
         self.inputs[i] = txin
         self.raw = self.serialize()
+    def add_input(self, input):
+        self.inputs.append(input)
+        self.raw = None
+
+    def input_value(self):
+        return sum([x['value'] for x in self.inputs])
+
+    def output_value(self):
+        return sum([ x[2] for x in self.outputs])
+
+    def get_fee(self):
+        return self.input_value() - self.output_value()
 
     def signature_count(self):
         r = 0
@@ -762,6 +795,11 @@ class Transaction:
                 addr = x
             elif type == 'pubkey':
                 addr = public_key_to_bc_address(x.decode('hex'))
+            elif type == 'op_return':
+                try:
+                    addr = 'OP_RETURN: "' + x.decode('utf8') + '"'
+                except:
+                    addr = 'OP_RETURN: "' + x.encode('hex') + '"'
             else:
                 addr = "(None)"
             o.append((addr, v))
