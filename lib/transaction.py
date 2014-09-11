@@ -27,7 +27,7 @@ import time
 import struct
 
 #
-# Workalike python implementation of Bitcoin's CDataStream class.
+# Work-alike python implementation of Bitcoin's CDataStream class.
 #
 import struct
 import StringIO
@@ -435,7 +435,7 @@ def get_address_from_output_script(bytes):
         return 'address', hash_160_to_bc_address(decoded[1][1], 5)
 
     # OP_RETURN
-    match = [ opcodes.OP_RETURN, opcodes.OP_PUSHDATA4 ]
+    match = [opcodes.OP_RETURN, opcodes.OP_PUSHDATA4]
     if match_decoded(decoded, match):
         return 'op_return', decoded[1][1]
 
@@ -528,6 +528,7 @@ class Transaction:
         self.outputs = map(lambda x: (x['type'], x['address'], x['value']), d['outputs'])
         self.locktime = d['locktime']
         self.time = d['time']
+
     @classmethod
     def sweep(cls, privkeys, network, to_address, fee):
         inputs = []
@@ -635,7 +636,7 @@ class Transaction:
                 if for_sig == -1:
                     # we assume that signature will be 0x48 bytes long
                     pubkeys = txin['pubkeys']
-                    sig_list = [ "00"* 0x48 ] * num_sig
+                    sig_list = ["00"* 0x48] * num_sig
                 elif is_complete:
                     pubkeys = txin['pubkeys']
                     for signature in signatures:
@@ -693,6 +694,7 @@ class Transaction:
         txin['x_pubkeys'][ii] = pubkey
         self.inputs[i] = txin
         self.raw = self.serialize()
+
     def add_input(self, input):
         self.inputs.append(input)
         self.raw = None
@@ -701,7 +703,7 @@ class Transaction:
         return sum([x['value'] for x in self.inputs])
 
     def output_value(self):
-        return sum([ x[2] for x in self.outputs])
+        return sum([x[2] for x in self.outputs])
 
     def get_fee(self):
         return self.input_value() - self.output_value()

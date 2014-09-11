@@ -45,9 +45,10 @@ MIN_RELAY_TX_FEE = 1000000
 EncodeAES = lambda secret, s: base64.b64encode(aes.encryptData(secret, s))
 DecodeAES = lambda secret, e: aes.decryptData(secret, base64.b64decode(e))
 
+
 def strip_PKCS7_padding(s):
     """return s stripped of PKCS7 padding"""
-    if len(s)%16 or not s:
+    if len(s) % 16 or not s:
         raise ValueError("String of len %d can't be PCKS7-padded" % len(s))
     numpads = ord(s[-1])
     if numpads > 16:
@@ -68,6 +69,7 @@ def aes_encrypt_with_iv(key, iv, data):
     (mode, length, ciph) = moo.encrypt(data, mode, key, keysize, iv)
     return ''.join(map(chr, ciph))
 
+
 def aes_decrypt_with_iv(key, iv, data):
     mode = aes.AESModeOfOperation.modeOfOperation["CBC"]
     key = map(ord, key)
@@ -79,7 +81,6 @@ def aes_decrypt_with_iv(key, iv, data):
     decr = moo.decrypt(data, None, mode, key, keysize, iv)
     decr = strip_PKCS7_padding(decr)
     return decr
-
 
 
 def pw_encode(s, password):
@@ -147,6 +148,7 @@ def Hash(x):
 hash_encode = lambda x: x[::-1].encode('hex')
 hash_decode = lambda x: x.decode('hex')[::-1]
 hmac_sha_512 = lambda x, y: hmac.new(x, y, hashlib.sha512).digest()
+
 
 def is_new_seed(x, prefix=version.SEED_BIP44):
     import mnemonic
