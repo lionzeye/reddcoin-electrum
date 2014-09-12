@@ -9,6 +9,7 @@ dist/
 /electrum.py
 contrib/pyinstaller/
 Electrum.egg-info/
+Reddcoin_Electrum.egg-info/
 gui/qt/icons_rc.py
 locale/
 .devlocaltmp/
