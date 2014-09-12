@@ -633,7 +633,7 @@ class ElectrumWindow(QMainWindow):
             elif conf == 0:
                 time_str = 'pending'
                 icon = QIcon(":icons/unconfirmed.png")
-            elif conf < 6:
+            elif conf < 3:
                 icon = QIcon(":icons/clock%d.png"%conf)
             else:
                 icon = QIcon(":icons/confirmed.png")
