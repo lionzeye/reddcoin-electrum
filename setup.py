@@ -17,7 +17,7 @@ if sys.version_info[:3] < (2, 6, 0):
 
 usr_share = '/usr/share'
 if not os.access(usr_share, os.W_OK):
-    usr_share = os.getenv("XDG_DATA_HOME", os.path.join(os.getenv("HOME"), ".local", "share"))
+    usr_share = os.getenv("XDG_DATA_HOME", os.path.join(os.path.expanduser("~"), ".local", "share"))
 
 data_files = []
 if (len(sys.argv) > 1 and (sys.argv[1] == "sdist")) or (platform.system() != 'Windows' and platform.system() != 'Darwin'):
@@ -58,8 +58,8 @@ os.system("pip install http://download.electrum.org/tlslite-0.4.5.tar.gz")
 setup(
     name="Electrum",
     version=version.ELECTRUM_VERSION,
-    install_requires=['slowaes', 'ecdsa>=0.9', 'pbkdf2', 'requests', 'pyasn1', 'pyasn1-modules', 'qrcode', 'tlslite',
-                      'numpy', 'ltc_scrypt'],
+    install_requires=['slowaes', 'ecdsa>=0.9', 'pbkdf2', 'requests', 'pyasn1', 'pyasn1-modules',
+                      'qrcode', 'tlslite', 'numpy', 'ltc_scrypt'],
     package_dir={
         'electrum': 'lib',
         'electrum_gui': 'gui',
@@ -76,6 +76,7 @@ setup(
         'electrum.daemon',
         'electrum.i18n',
         'electrum.interface',
+        'electrum.kgw',
         'electrum.mnemonic',
         'electrum.msqr',
         'electrum.network',
@@ -115,19 +116,16 @@ setup(
         'electrum_gui.qt.version_getter',
         'electrum_gui.stdio',
         'electrum_gui.text',
-        'electrum_plugins.btchipwallet',
-        'electrum_plugins.coinbase_buyback',
         'electrum_plugins.cosigner_pool',
         'electrum_plugins.exchange_rate',
         'electrum_plugins.greenaddress_instant',
         'electrum_plugins.labels',
-        'electrum_plugins.trezor',
         'electrum_plugins.virtualkeyboard',
     ],
-    description="Lightweight Reddcoin Wallet",
-    author="Thomas Voegtlin",
-    author_email="thomasv1@gmx.de",
+    description="Reddcoin Electrum Wallet",
+    author="Thomas Voegtlin, Larry Ren",
+    author_email="thomasv1@gmx.de, ren@reddcoin.com",
     license="GNU GPLv3",
-    url="https://electrum.org",
-    long_description="""Lightweight Reddcoin Wallet"""
+    url="https://reddwallet.org",
+    long_description="""Reddcoin Electrum Wallet"""
 )
