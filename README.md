@@ -35,28 +35,28 @@ for root, except if you need to install PyQt4 to the system (see below)
 
 Somewhere create a virtualenv and enter it
 
-# virtualenv electrum -p python2.7
-# source electrum/bin/activate
+    virtualenv electrum -p python2.7
+    source electrum/bin/activate
 
 Install dependencies
 
-# pip install --pre slowaes
-# pip install ecdsa pbkdf2 requests pyasn1 pyasn1-modules qrcode tlslite numpy ltc_scrypt
+    pip install --pre slowaes
+    pip install ecdsa pbkdf2 requests pyasn1 pyasn1-modules qrcode tlslite numpy ltc_scrypt
 
 PyQt4 is not available from pip and it is a PITA to build yourself anyway, install it
 through your distribution and link it into the virtualenv folder. Note that the system
 path of the libraries might be different on your distribution. This is from Gentoo.
 
-# ln -s /usr/lib/python2.7/site-packages/sip* $VIRTUAL_ENV/lib/python2.7/site-packages/
-# ln -s /usr/lib/python2.7/site-packages/PyQt4 $VIRTUAL_ENV/lib/python2.7/site-packages/
+    ln -s /usr/lib/python2.7/site-packages/sip* $VIRTUAL_ENV/lib/python2.7/site-packages/
+    ln -s /usr/lib/python2.7/site-packages/PyQt4 $VIRTUAL_ENV/lib/python2.7/site-packages/
 
 Create the icons
 
-# pyrcc4 icons.qrc -o gui/qt/icons_rc.py
+    pyrcc4 icons.qrc -o gui/qt/icons_rc.py
 
 Install Electrum
 
-# python setup.py install
+    python setup.py install
 
 
 How to Create Official Packages
