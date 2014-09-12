@@ -450,8 +450,6 @@ class InstallWizard(QDialog):
                 if Wallet.is_xprv(text):
                     password = self.password_dialog()
                     wallet = Wallet.from_xprv(text, password, self.storage)
-                elif Wallet.is_old_mpk(text):
-                    wallet = Wallet.from_old_mpk(text, self.storage)
                 elif Wallet.is_xpub(text):
                     wallet = Wallet.from_xpub(text, self.storage)
                 elif Wallet.is_address(text):

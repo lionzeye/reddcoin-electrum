@@ -1525,19 +1525,11 @@ class Wallet(object):
         if not storage.file_exists:
             return NewWallet(storage)
 
-        seed_version = storage.get('seed_version')
-        if not seed_version:
-            seed_version = OLD_SEED_VERSION if len(storage.get('master_public_key','')) == 128 else NEW_SEED_VERSION
-
-        if seed_version not in [OLD_SEED_VERSION, NEW_SEED_VERSION]:
+        seed_version = storage.get('seed_version', NEW_SEED_VERSION)
+        if seed_version != NEW_SEED_VERSION:
             msg = "This wallet seed is not supported anymore."
-            if seed_version in [5, 7, 8]:
-                msg += "\nTo open this wallet, try 'git checkout seed_v%d'"%seed_version
             print msg
             sys.exit(1)
-
-        if seed_version == OLD_SEED_VERSION:
-            return OldWallet(storage)
 
         config = storage.config
         run_hook('add_wallet_types', wallet_types)
@@ -1556,7 +1548,7 @@ class Wallet(object):
         if not seed:
             return False
         elif is_old_seed(seed):
-            return True
+            return False
         elif is_new_seed(seed):
             return True
         else:
@@ -1610,7 +1602,7 @@ class Wallet(object):
     @classmethod
     def from_seed(cls, seed, storage):
         if is_old_seed(seed):
-            klass = OldWallet
+            raise BaseException('old seed not supported')
         elif is_new_seed(seed):
             klass = NewWallet
         w = klass(storage)
@@ -1629,13 +1621,6 @@ class Wallet(object):
         w = Imported_Wallet(storage)
         for x in text.split():
             w.import_key(x, None)
-        return w
-
-    @classmethod
-    def from_old_mpk(cls, mpk, storage):
-        w = OldWallet(storage)
-        w.seed = ''
-        w.create_watching_only_wallet(mpk)
         return w
 
     @classmethod
