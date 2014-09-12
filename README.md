@@ -8,15 +8,17 @@ Official Reddcoin Electrum Client - reference implementation
 
 Getting Started
 ------------------
-To run Electrum from this directory, just do:
-
-    ./electrum
-
-If you install Electrum on your system, you can run it from any
-directory:
+To install the wallet and all its dependencies, just do:
 
     sudo python setup.py install
+
+Then you can run it from any directory:
+
     electrum
+
+Or you can run it from the source code directory:
+
+    ./electrum
 
 How to Create Official Packages
 ------------------------------------
