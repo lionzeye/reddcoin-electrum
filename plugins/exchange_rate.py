@@ -352,7 +352,7 @@ class Plugin(BasePlugin):
             self.exchanger = Exchanger(self)
             self.exchanger.start()
             self.gui.exchanger = self.exchanger #
-            self.add_fiat_edit()
+            # self.add_fiat_edit()
             self.win.update_status()
 
     def close(self):
