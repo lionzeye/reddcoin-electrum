@@ -45,7 +45,13 @@ Install dependencies
 
 PyQt4 is not available from pip and it is a PITA to build yourself anyway, install it
 through your distribution and link it into the virtualenv folder. Note that the system
-path of the libraries might be different on your distribution. This is from Gentoo.
+path of the libraries might be different on your distribution. 
+
+On Ubuntu:
+    
+    sudo apt-get install python-qt4
+
+On Gentoo:
 
     ln -s /usr/lib/python2.7/site-packages/sip* $VIRTUAL_ENV/lib/python2.7/site-packages/
     ln -s /usr/lib/python2.7/site-packages/PyQt4 $VIRTUAL_ENV/lib/python2.7/site-packages/
