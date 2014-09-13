@@ -676,7 +676,8 @@ class Transaction:
             s += var_int(len(script)/2)                              # script length
             s += script                                              # script
         s += int_to_hex(self.locktime, 4)                            # lock time
-        if self.version >= 2:
+
+        if for_sig is None and self.version >= 2:
             s += int_to_hex(self.time, 4)                            # time
         if for_sig is not None and for_sig != -1:
             s += int_to_hex(1, 4)                                    # hash type
@@ -770,7 +771,7 @@ class Transaction:
 
             # signature for input skips nTime
             hex_sig = self.tx_for_sig(i)
-            for_sig = Hash((hex_sig[:-16] + hex_sig[-8:]).decode('hex'))
+            for_sig = Hash(hex_sig.decode('hex'))
 
             for pubkey in redeem_pubkeys:
                 if pubkey in keypairs.keys():
