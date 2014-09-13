@@ -73,14 +73,14 @@ class WalletStorage(object):
             return path
 
         # default path
-        dirpath = os.path.join(config.path, "wallets")
+        dirpath = os.path.join(config.path, "reddcoin-wallets")
         if not os.path.exists(dirpath):
             os.mkdir(dirpath)
 
-        new_path = os.path.join(config.path, "wallets", "default_wallet")
+        new_path = os.path.join(config.path, "reddcoin-wallets", "default_wallet")
 
         # default path in pre 1.9 versions
-        old_path = os.path.join(config.path, "electrum.dat")
+        old_path = os.path.join(config.path, "reddcoin-electrum.dat")
         if os.path.exists(old_path) and not os.path.exists(new_path):
             os.rename(old_path, new_path)
 
