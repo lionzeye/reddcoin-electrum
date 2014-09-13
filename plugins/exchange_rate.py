@@ -387,12 +387,13 @@ class Plugin(BasePlugin):
         self.get_fiat_price_text(r)
         quote = r.get(0)
         if quote:
-            price_text = "1 BTC~%s"%quote
+            price_text = "1 BTC=%s"%quote
             fiat_currency = quote[-3:]
             btc_price = self.btc_rate
             fiat_balance = Decimal(btc_price) * (Decimal(btc_balance)/100000000)
             balance_text = "(%.2f %s)" % (fiat_balance,fiat_currency)
-            text = "  " + balance_text + "     " + price_text + " "
+            # text = "  " + balance_text + "     " + price_text + " "
+            text = "     " + price_text + " "
         r2[0] = text
 
     def create_fiat_balance_text(self, btc_balance):

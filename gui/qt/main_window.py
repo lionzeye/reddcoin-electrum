@@ -346,7 +346,7 @@ class ElectrumWindow(QMainWindow):
         tools_menu = menubar.addMenu(_("&Tools"))
 
         # Settings / Preferences are all reserved keywords in OSX using this as work around
-        tools_menu.addAction(_("Reddcoin Electrum preferences") if sys.platform == 'darwin' else _("Preferences"), self.settings_dialog)
+        tools_menu.addAction(_("&System Settings"), self.settings_dialog)
         tools_menu.addAction(_("&Network"), self.run_network_dialog)
         tools_menu.addAction(_("&Plugins"), self.plugins_dialog)
         tools_menu.addSeparator()
@@ -2623,7 +2623,7 @@ class ElectrumWindow(QMainWindow):
 
         for a,b,c in widgets:
             i = grid.rowCount()
-            if b: 
+            if b:
                 grid.addWidget(a, i, 0)
                 grid.addWidget(b, i, 1)
             else:
