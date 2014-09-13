@@ -17,7 +17,8 @@ class MyLineEdit(QLineEdit):
 
 class AmountEdit(MyLineEdit):
     shortcut = pyqtSignal()
-    def __init__(self, base_unit, is_int = False, parent=None):
+
+    def __init__(self, base_unit, is_int=False, parent=None):
         QLineEdit.__init__(self, parent)
         self.base_unit = base_unit
         self.textChanged.connect(self.numbify)
@@ -35,12 +36,12 @@ class AmountEdit(MyLineEdit):
             return
         pos = self.cursorPosition()
         chars = '0123456789'
-        if not self.is_int: chars +='.'
+        if not self.is_int: chars += '.'
         s = ''.join([i for i in text if i in chars])
         if not self.is_int:
             if '.' in s:
                 p = s.find('.')
-                s = s.replace('.','')
+                s = s.replace('.', '')
                 s = s[:p] + '.' + s[p:p+self.decimal_point()]
         self.setText(s)
         self.setCursorPosition(pos)
@@ -54,7 +55,7 @@ class AmountEdit(MyLineEdit):
             textRect.adjust(2, 0, -10, 0)
             painter = QPainter(self)
             painter.setPen(self.help_palette.brush(QPalette.Disabled, QPalette.Text).color())
-            painter.drawText(textRect, Qt.AlignRight | Qt.AlignVCenter, self.base_unit)
+            painter.drawText(textRect, Qt.AlignRight | Qt.AlignVCenter, self.base_unit())
 
     def get_amount(self):
         try:
@@ -66,7 +67,10 @@ class AmountEdit(MyLineEdit):
 
 class RDDAmountEdit(AmountEdit):
     def __init__(self, is_int=False, parent=None):
-        AmountEdit.__init__(self, 'RDD', is_int, parent)
+        AmountEdit.__init__(self, self._base_unit, is_int, parent)
+
+    def _base_unit(self):
+        return 'RDD'
 
     def get_amount(self):
         try:
@@ -84,4 +88,3 @@ class RDDAmountEdit(AmountEdit):
         p = pow(10, self.decimal_point())
         x = amount / Decimal(p)
         self.setText(str(x))
-
