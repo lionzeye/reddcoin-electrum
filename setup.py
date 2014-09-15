@@ -70,7 +70,7 @@ setup(
         'electrum_gui': 'gui',
         'electrum_plugins': 'plugins',
     },
-    scripts=['electrum'],
+    scripts=['reddcoin-electrum'],
     include_package_data=True,
     data_files=data_files,
     description="Reddcoin Electrum Wallet",
