@@ -77,7 +77,7 @@ setup(
     author="Thomas Voegtlin, Larry Ren",
     author_email="thomasv1@gmx.de, ren@reddcoin.com",
     license="GNU GPLv3",
-    url="https://reddwallet.org",
+    url="https://wallet.reddcoin.com",
     long_description="Reddcoin Electrum Wallet",
     platform="All",
 )

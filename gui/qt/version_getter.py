@@ -90,7 +90,7 @@ class UpdateLabel(QLabel):
         self.dialog.done(0)
   
     def open_website(self):
-        webbrowser.open("http://www.reddwallet.org/download.html")
+        webbrowser.open("https://wallet.reddcoin.com")
         self.dialog.done(0)
 
     def mouseReleaseEvent(self, event):

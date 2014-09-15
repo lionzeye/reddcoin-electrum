@@ -457,7 +457,7 @@ class MiniWindow(QDialog):
 
 
     def the_website(self):
-        webbrowser.open("http://www.reddwallet.org")
+        webbrowser.open("https://wallet.reddcoin.com")
 
 
     def toggle_receiving_layout(self, toggle_state):
