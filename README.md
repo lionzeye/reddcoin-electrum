@@ -16,6 +16,11 @@ Create the icons
 To install the wallet and all its dependencies, just do:
 
     sudo python setup.py install
+    
+If `setup.py` fails with "ImportError: No module named setuptools", install python-setuptools and run setup.py again
+
+    sudo apt-get install python-setuptools
+    sudo python setup.py install
 
 Then you can run it from any directory:
 
