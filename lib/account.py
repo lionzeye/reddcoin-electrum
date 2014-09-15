@@ -276,6 +276,8 @@ class BIP32_Account(Account):
     def __init__(self, v):
         Account.__init__(self, v)
         self.xpub = v['xpub']
+        self.xpub_receive = None
+        self.xpub_change = None
 
     def dump(self):
         d = Account.dump(self)
@@ -304,7 +306,17 @@ class BIP32_Account(Account):
         return pubkeys[i]
 
     def derive_pubkeys(self, for_change, n):
-        return self.derive_pubkey_from_xpub(self.xpub, for_change, n)
+        xpub = self.xpub_change if for_change else self.xpub_receive
+        if xpub is None:
+            xpub = bip32_public_derivation(self.xpub, "", "/%d"%for_change)
+            if for_change:
+                self.xpub_change = xpub
+            else:
+                self.xpub_receive = xpub
+        _, _, _, c, cK = deserialize_xkey(xpub)
+        cK, c = CKD_pub(cK, c, n)
+        result = cK.encode('hex')
+        return result
 
     def get_private_key(self, sequence, wallet, password):
         out = []
@@ -344,16 +356,9 @@ class BIP32_Account(Account):
         return xkey, s
 
     def get_name(self, k):
-        name = "Unnamed account"
-        m = re.match("m/(\d+)'", k)
-        if m:
-            num = m.group(1)
-            if num == '0':
-                name = "Main account"
-            else:
-                name = "Account %s" % num
+        return "Main account" if k == '0' else "Account " + k
 
-        return name
+                    
 
 
 class BIP32_Account_2of2(BIP32_Account):

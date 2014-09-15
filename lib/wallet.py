@@ -39,8 +39,6 @@ import bitcoin
 from synchronizer import WalletSynchronizer
 from mnemonic import Mnemonic
 
-COINBASE_MATURITY = 30
-DUST_THRESHOLD = 1000000
 
 
 # internal ID for imported account
@@ -163,8 +161,7 @@ class Abstract_Wallet(object):
         self.addressbook           = storage.get('contacts', [])
 
         self.history               = storage.get('addr_history', {})        # address -> list(txid, height)
-
-        self.fee_per_kb            = int(storage.get('fee_per_kb', 1000000))
+        self.fee_per_kb            = int(storage.get('fee_per_kb', RECOMMENDED_FEE))
 
         # This attribute is set when wallet.start_threads is called.
         self.synchronizer = None
@@ -699,10 +696,16 @@ class Abstract_Wallet(object):
 
         return default_label
 
+    def get_tx_fee(self, tx):
+        # this method can be overloaded
+        return tx.get_fee()
+
     def estimated_fee(self, tx):
         estimated_size = len(tx.serialize(-1))/2
-        #print_error('estimated_size', estimated_size)
-        return int(self.fee_per_kb*estimated_size/1024.)
+        fee = int(self.fee_per_kb*estimated_size/1000.)
+        if fee < MIN_RELAY_TX_FEE: # and tx.requires_fee(self.verifier):
+            fee = MIN_RELAY_TX_FEE
+        return fee
 
     def make_unsigned_transaction(self, outputs, fixed_fee=None, change_addr=None, domain=None, coins=None):
         # check outputs
@@ -735,7 +738,6 @@ class Abstract_Wallet(object):
             fee = fixed_fee if fixed_fee is not None else self.estimated_fee(tx)
             if total >= amount + fee: break
         else:
-            print_error(fixed_fee)
             print_error("Not enough funds", total, amount, fee)
             return None
 
@@ -1339,7 +1341,7 @@ class BIP32_HD_Wallet(BIP32_Wallet):
     def can_create_accounts(self):
         return self.root_name in self.master_private_keys.keys()
 
-    def addresses(self, b):
+    def addresses(self, b=True):
         l = BIP32_Wallet.addresses(self, b)
         if self.next_account:
             next_address = self.next_account[2]
@@ -1524,13 +1526,11 @@ class Wallet(object):
 
         if not storage.file_exists:
             return NewWallet(storage)
-
         seed_version = storage.get('seed_version', NEW_SEED_VERSION)
         if seed_version != NEW_SEED_VERSION:
             msg = "This wallet seed is not supported anymore."
             print msg
             sys.exit(1)
-
         config = storage.config
         run_hook('add_wallet_types', wallet_types)
         wallet_type = storage.get('wallet_type')
@@ -1541,6 +1541,7 @@ class Wallet(object):
             else:
                 raise BaseException('unknown wallet type', wallet_type)
         else:
+
             return NewWallet(storage)
 
     @classmethod

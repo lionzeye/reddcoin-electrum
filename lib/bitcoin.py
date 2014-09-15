@@ -38,8 +38,10 @@ except ImportError:
 
 ################################## transactions
 
+DUST_THRESHOLD = 1000000
 MIN_RELAY_TX_FEE = 1000000
-
+RECOMMENDED_FEE = 1000000
+COINBASE_MATURITY = 30
 
 # AES encryption
 EncodeAES = lambda secret, s: base64.b64encode(aes.encryptData(secret, s))
@@ -152,7 +154,7 @@ hmac_sha_512 = lambda x, y: hmac.new(x, y, hashlib.sha512).digest()
 
 def is_new_seed(x, prefix=version.SEED_BIP44):
     import mnemonic
-    x = mnemonic.Mnemonic.prepare_seed(x)
+    x = mnemonic.prepare_seed(x)
     s = hmac_sha_512("Seed version", x.encode('utf8')).encode('hex')
     return s.startswith(prefix)
 
