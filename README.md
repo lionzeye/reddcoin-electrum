@@ -4,7 +4,7 @@ Official Reddcoin Electrum Client - reference implementation
 * Author: Thomas Voegtlin
 * Author: Larry Ren (laudney) forked for Reddcoin
 * Language: Python
-* Homepage: http://reddwallet.org
+* Homepage: https://wallet.reddcoin.com
 
 Getting Started
 ------------------
