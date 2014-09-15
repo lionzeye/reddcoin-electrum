@@ -59,6 +59,11 @@ mv PyInstaller-2.1 $WINEPREFIX/drive_c/pyinstaller
 wget -O setuptools.exe "$SETUPTOOLS_URL"
 wine setuptools.exe
 
+# Fix Python27/Lib/random.py
+#def ni(i): raise NotImplementedError
+#import os
+#os.urandom = ni
+
 # Install dependencies
 wine "$PYHOME\\Scripts\\easy_install.exe" ecdsa slowaes #zbar
 

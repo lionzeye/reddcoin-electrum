@@ -7,14 +7,14 @@
 ;General
 
   ;Name and file
-  Name "Electrum"
-  OutFile "dist/electrum-setup.exe"
+  Name "Reddcoin Electrum"
+  OutFile "dist/reddcoin-electrum-setup.exe"
 
   ;Default installation folder
-  InstallDir "$PROGRAMFILES\Electrum"
+  InstallDir "$PROGRAMFILES\Reddcoin-Electrum"
 
   ;Get installation folder from registry if available
-  InstallDirRegKey HKCU "Software\Electrum" ""
+  InstallDirRegKey HKCU "Software\Reddcoin-Electrum" ""
 
   ;Request application privileges for Windows Vista
   RequestExecutionLevel admin
@@ -36,7 +36,7 @@
 
   ;Start Menu Folder Page Configuration
   !define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKCU"
-  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\Electrum"
+  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\Reddcoin-Electrum"
   !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
 
   ;!insertmacro MUI_PAGE_STARTMENU Application $StartMenuFolder
@@ -59,21 +59,21 @@ Section
   SetOutPath "$INSTDIR"
 
   ;ADD YOUR OWN FILES HERE...
-  file /r dist\electrum\*.*
+  file /r dist\reddcoin-electrum\*.*
 
   ;Store installation folder
-  WriteRegStr HKCU "Software\Electrum" "" $INSTDIR
+  WriteRegStr HKCU "Software\Reddcoin-Electrum" "" $INSTDIR
 
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
 
-  CreateShortCut "$DESKTOP\Electrum.lnk" "$INSTDIR\electrum.exe" ""
+  CreateShortCut "$DESKTOP\Reddcoin-Electrum.lnk" "$INSTDIR\reddcoin-electrum.exe" ""
 
   ;create start-menu items
-  CreateDirectory "$SMPROGRAMS\Electrum"
-  CreateShortCut "$SMPROGRAMS\Electrum\Uninstall.lnk" "$INSTDIR\Uninstall.exe" "" "$INSTDIR\Uninstall.exe" 0
-  CreateShortCut "$SMPROGRAMS\Electrum\Electrum.lnk" "$INSTDIR\electrum.exe" "" "$INSTDIR\electrum.exe" 0
+  CreateDirectory "$SMPROGRAMS\Reddcoin-Electrum"
+  CreateShortCut "$SMPROGRAMS\Reddcoin-Electrum\Uninstall.lnk" "$INSTDIR\Uninstall.exe" "" "$INSTDIR\Uninstall.exe" 0
+  CreateShortCut "$SMPROGRAMS\Reddcoin-Electrum\Reddcoin-Electrum.lnk" "$INSTDIR\reddcoin-electrum.exe" "" "$INSTDIR\reddcoin-electrum.exe" 0
 
 SectionEnd
 
@@ -95,10 +95,10 @@ Section "Uninstall"
 
   RMDir "$INSTDIR"
 
-  Delete "$DESKTOP\Electrum.lnk"
-  Delete "$SMPROGRAMS\Electrum\*.*"
-  RmDir  "$SMPROGRAMS\Electrum"
+  Delete "$DESKTOP\Reddcoin-Electrum.lnk"
+  Delete "$SMPROGRAMS\Reddcoin-Electrum\*.*"
+  RmDir  "$SMPROGRAMS\Reddcoin-Electrum"
 
-  DeleteRegKey /ifempty HKCU "Software\Electrum"
+  DeleteRegKey /ifempty HKCU "Software\Reddcoin-Electrum"
 
 SectionEnd

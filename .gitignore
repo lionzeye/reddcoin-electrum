@@ -15,3 +15,5 @@ locale/
 .devlocaltmp/
 *_trial_temp
 .idea/
+tmp/
+reddcoin-electrum.spec
