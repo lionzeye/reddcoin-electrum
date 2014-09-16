@@ -35,7 +35,7 @@ if (len(sys.argv) > 1 and (sys.argv[1] == "sdist")) or (platform.system() != 'Wi
 
 appdata_dir = util.appdata_dir()
 if not os.access(appdata_dir, os.W_OK):
-    appdata_dir = os.path.join(usr_share, "electrum")
+    appdata_dir = os.path.join(usr_share, "Reddcoin-Electrum")
 
 data_files += [
     (appdata_dir, ["data/README"]),
@@ -64,7 +64,7 @@ setup(
     version=version.ELECTRUM_VERSION,
     install_requires=['slowaes', 'ecdsa>=0.9', 'pbkdf2', 'requests', 'pyasn1', 'pyasn1-modules',
                       'qrcode', 'tlslite', 'numpy', 'ltc_scrypt'],
-    packages=['electrum', 'electrum_gui', 'electrum_plugins'],
+    packages=['electrum', 'electrum_gui', 'electrum_plugins', 'electrum_gui.qt'],
     package_dir={
         'electrum': 'lib',
         'electrum_gui': 'gui',

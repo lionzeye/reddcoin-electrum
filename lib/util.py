@@ -60,11 +60,11 @@ def user_dir():
 
 
 def data_dir():
-    import __builtin__
-    if __builtin__.use_local_modules:
-        return local_data_dir()
-    else:
-        return appdata_dir()
+    #import __builtin__
+    #if __builtin__.use_local_modules:
+    #    return local_data_dir()
+    #else:
+    return appdata_dir()
 
 
 def appdata_dir():

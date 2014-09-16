@@ -26,23 +26,6 @@ import sys
 import time
 import traceback
 
-
-is_local = os.path.dirname(os.path.realpath(__file__)) == os.getcwd()
-is_android = 'ANDROID_DATA' in os.environ
-
-if is_local:
-    sys.path.append('packages')
-
-import __builtin__
-__builtin__.use_local_modules = is_local or is_android
-
-# load local module as electrum
-if __builtin__.use_local_modules:
-    import imp
-    imp.load_module('electrum', *imp.find_module('lib'))
-    imp.load_module('electrum_gui', *imp.find_module('gui'))
-
-
 from electrum import util
 from electrum import SimpleConfig, Network, Wallet, WalletStorage, NetworkProxy, Commands, known_commands, pick_random_server
 from electrum.util import print_msg, print_stderr, print_json, set_verbosity
@@ -146,7 +129,6 @@ def run_command(cmd, password=None, args=None):
 
 
 if __name__ == '__main__':
-
     wallet = None
     parser = arg_parser()
     options, args = parser.parse_args()
@@ -154,6 +136,7 @@ if __name__ == '__main__':
         options.electrum_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'electrum_data')
 
     # config is an object passed to the various constructors (wallet, interface, gui)
+    is_android = 'ANDROID_DATA' in os.environ
     if is_android:
         config_options = {
             'portable': True,
@@ -294,7 +277,7 @@ if __name__ == '__main__':
 
             if not options.offline:
                 s = get_daemon(config, True)
-                network = NetworkProxy(s,config)
+                network = NetworkProxy(s, config)
                 network.start()
                 wallet.start_threads(network)
                 print_msg("Recovering wallet...")

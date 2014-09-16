@@ -7,30 +7,24 @@ plugins = []
 
 
 def init_plugins(config):
-    import imp, pkgutil, __builtin__, os
+    import pkgutil, __builtin__, os
     global plugins
 
-    if __builtin__.use_local_modules:
-        fp, pathname, description = imp.find_module('plugins')
-        plugin_names = [name for a, name, b in pkgutil.iter_modules([pathname])]
-        plugin_names = filter( lambda name: os.path.exists(os.path.join(pathname,name+'.py')), plugin_names)
-        imp.load_module('electrum_plugins', fp, pathname, description)
-        plugin_modules = map(lambda name: imp.load_source('electrum_plugins.'+name, os.path.join(pathname,name+'.py')), plugin_names)
-    else:
-        import electrum_plugins
-        plugin_names = [name for a, name, b in pkgutil.iter_modules(electrum_plugins.__path__)]
-        plugin_modules = [ __import__('electrum_plugins.'+name, fromlist=['electrum_plugins']) for name in plugin_names]
+    import electrum_plugins
+    plugin_names = [name for a, name, b in pkgutil.iter_modules(electrum_plugins.__path__)]
+    plugin_modules = [__import__('electrum_plugins.'+name, fromlist=['electrum_plugins']) for name in plugin_names]
 
     for name, p in zip(plugin_names, plugin_modules):
         try:
-            plugins.append( p.Plugin(config, name) )
+            plugins.append(p.Plugin(config, name))
         except Exception:
-            print_msg(_("Error: cannot initialize plugin"),p)
+            print_msg(_("Error: cannot initialize plugin"), p)
             traceback.print_exc(file=sys.stdout)
 
 
 hook_names = set()
 hooks = {}
+
 
 def hook(func):
     n = func.func_name
@@ -41,7 +35,7 @@ def hook(func):
 
 def run_hook(name, *args):
     results = []
-    f_list = hooks.get(name,[])
+    f_list = hooks.get(name, [])
     for p, f in f_list:
         if name == 'load_wallet':
             p.wallet = args[0]
@@ -109,4 +103,3 @@ class BasePlugin:
 
     def settings_dialog(self):
         pass
-

@@ -1,13 +1,6 @@
 include README.md LICENCE RELEASE-NOTES AUTHORS
 include electrum.conf.sample
 include electrum.desktop
-include *.py
-include electrum
-recursive-include lib *.py
-recursive-include lib/wordlist *
-recursive-include gui *.py
-recursive-include plugins *.py
-recursive-include packages *.py
 include app.fil
 include icons.qrc
 recursive-include icons *
