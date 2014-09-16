@@ -64,7 +64,7 @@ setup(
     version=version.ELECTRUM_VERSION,
     install_requires=['slowaes', 'ecdsa>=0.9', 'pbkdf2', 'requests', 'pyasn1', 'pyasn1-modules',
                       'qrcode', 'tlslite', 'numpy', 'ltc_scrypt'],
-    packages=['electrum', 'electrum_gui', 'electrum_plugins'],
+    packages=['electrum', 'electrum_gui', 'electrum_gui.qt', 'electrum_plugins'],
     package_dir={
         'electrum': 'lib',
         'electrum_gui': 'gui',
