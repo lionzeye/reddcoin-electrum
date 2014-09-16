@@ -60,10 +60,6 @@ def user_dir():
 
 
 def data_dir():
-    #import __builtin__
-    #if __builtin__.use_local_modules:
-    #    return local_data_dir()
-    #else:
     return appdata_dir()
 
 
@@ -71,14 +67,13 @@ def appdata_dir():
     """Find the path to the application data directory; add an electrum folder and return path."""
     if platform.system() == "Windows":
         return os.path.join(os.environ["APPDATA"], "Reddcoin-Electrum")
-    elif platform.system() == "Linux":
-        return os.path.join(sys.prefix, "share", "reddcoin-electrum")
-    elif (platform.system() == "Darwin" or
+    elif (platform.system() == "Linux" or
+          platform.system() == "Darwin" or
           platform.system() == "DragonFly" or
           platform.system() == "OpenBSD" or
           platform.system() == "FreeBSD" or
           platform.system() == "NetBSD"):
-        return "/Library/Application Support/Reddcoin-Electrum"
+        return os.path.join("/usr/share", "reddcoin-electrum")
     else:
         raise Exception("Unknown Operating System")
 
