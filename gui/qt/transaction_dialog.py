@@ -36,7 +36,7 @@ import PyQt4.QtCore as QtCore
 from electrum import transaction
 from electrum.plugins import run_hook
 
-from util import MyTreeWidget
+from .util import MyTreeWidget
 
 class TxDialog(QDialog):
 

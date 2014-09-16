@@ -22,8 +22,8 @@ import time
 import Queue
 
 import bitcoin
-from util import print_error
-from transaction import Transaction
+from .util import print_error
+from .transaction import Transaction
 
 
 class WalletSynchronizer(threading.Thread):

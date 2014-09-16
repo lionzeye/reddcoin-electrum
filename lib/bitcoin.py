@@ -24,7 +24,7 @@ import sys
 import hmac
 
 import version
-from util import print_error
+from .util import print_error
 
 try:
     import ecdsa

@@ -13,7 +13,7 @@ version = imp.load_source('version', 'lib/version.py')
 util = imp.load_source('version', 'lib/util.py')
 
 if sys.version_info[:3] < (2, 6, 0):
-    sys.exit("Error: Electrum requires Python version >= 2.6.0...")
+    sys.exit("Error: Reddcoin Electrum requires Python version >= 2.6.0...")
 
 usr_share = '/usr/share'
 if not os.access(usr_share, os.W_OK):
@@ -35,7 +35,7 @@ if (len(sys.argv) > 1 and (sys.argv[1] == "sdist")) or (platform.system() != 'Wi
 
 appdata_dir = util.appdata_dir()
 if not os.access(appdata_dir, os.W_OK):
-    appdata_dir = os.path.join(usr_share, "Reddcoin-Electrum")
+    appdata_dir = os.path.join(usr_share, "reddcoin-electrum")
 
 data_files += [
     (appdata_dir, ["data/README"]),

@@ -35,7 +35,7 @@ from electrum.util import format_satoshis, age
 from main_window import ElectrumWindow
 import shutil
 
-from util import *
+from .util import *
 
 reddcoin = lambda v: v * 100000000
 

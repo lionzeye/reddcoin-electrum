@@ -23,9 +23,9 @@ import socks
 import socket
 import ssl
 
-from version import ELECTRUM_VERSION, PROTOCOL_VERSION
-from util import print_error, print_msg
-from simple_config import SimpleConfig
+from .version import ELECTRUM_VERSION, PROTOCOL_VERSION
+from .util import print_error, print_msg
+from .simple_config import SimpleConfig
 
 import x509
 

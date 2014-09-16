@@ -80,8 +80,8 @@ def arg_parser():
 
 def print_help(parser):
     parser.print_help()
-    print_msg("Type 'electrum help <command>' to see the help for a specific command")
-    print_msg("Type 'electrum --help' to see the list of options")
+    print_msg("Type 'reddcoin-electrum help <command>' to see the help for a specific command")
+    print_msg("Type 'reddcoin-electrum --help' to see the list of options")
     run_command(known_commands['help'])
 
 
@@ -133,7 +133,7 @@ if __name__ == '__main__':
     parser = arg_parser()
     options, args = parser.parse_args()
     if options.portable and options.wallet_path is None:
-        options.electrum_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'electrum_data')
+        options.electrum_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'reddcoin_electrum_data')
 
     # config is an object passed to the various constructors (wallet, interface, gui)
     is_android = 'ANDROID_DATA' in os.environ
@@ -197,7 +197,7 @@ if __name__ == '__main__':
     if cmd == 'daemon':
         arg = args[1] if len(args)>1 else None
         if arg not in ['start', 'stop', 'status']:
-            print_msg("syntax: electrum daemon <start|status|stop>")
+            print_msg("syntax: reddcoin-electrum daemon <start|status|stop>")
             sys.exit(1)
         s = get_daemon(config, False)
         if arg == 'start':
@@ -307,7 +307,7 @@ if __name__ == '__main__':
 
     if cmd.name not in ['create', 'restore'] and cmd.requires_wallet and not storage.file_exists:
         print_msg("Error: Wallet file not found.")
-        print_msg("Type 'electrum create' to create a new wallet, or provide a path to a wallet with the -w option")
+        print_msg("Type 'reddcoin-electrum create' to create a new wallet, or provide a path to a wallet with the -w option")
         sys.exit(0)
 
     if cmd.requires_wallet:

@@ -2,7 +2,7 @@ import ast
 import threading
 import os
 
-from util import user_dir, print_error, print_msg
+from .util import user_dir, print_error, print_msg
 
 SYSTEM_CONFIG_PATH = "/etc/electrum.conf"
 

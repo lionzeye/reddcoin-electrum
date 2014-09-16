@@ -42,10 +42,10 @@ from electrum import util, bitcoin, commands, Interface, Wallet
 from electrum import SimpleConfig, Wallet, WalletStorage
 from electrum import Imported_Wallet
 
-from amountedit import AmountEdit, RDDAmountEdit, MyLineEdit
-from network_dialog import NetworkDialog
-from qrcodewidget import QRCodeWidget, QRDialog
-from qrtextedit import QRTextEdit
+from .amountedit import AmountEdit, RDDAmountEdit, MyLineEdit
+from .network_dialog import NetworkDialog
+from .qrcodewidget import QRCodeWidget, QRDialog
+from .qrtextedit import QRTextEdit
 
 from decimal import Decimal
 
@@ -75,8 +75,8 @@ PR_ERROR   = 4     # could not parse
 from electrum import ELECTRUM_VERSION
 import re
 
-from util import MyTreeWidget, HelpButton, EnterButton, line_dialog, text_dialog, ok_cancel_buttons, close_button, WaitingDialog
-from util import filename_field, ok_cancel_buttons2, address_field
+from .util import MyTreeWidget, HelpButton, EnterButton, line_dialog, text_dialog, ok_cancel_buttons, close_button, WaitingDialog
+from .util import filename_field, ok_cancel_buttons2, address_field
 
 
 def format_status(x):

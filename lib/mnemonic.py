@@ -27,8 +27,8 @@ import ecdsa
 import pbkdf2
 
 import util
-from util import print_error
-from bitcoin import is_old_seed, is_new_seed
+from .util import print_error
+from .bitcoin import is_old_seed, is_new_seed
 import version
 import i18n
 

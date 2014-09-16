@@ -18,10 +18,10 @@
 
 
 import threading, time, Queue, os, sys, shutil, traceback
-from util import user_dir, appdata_dir, print_error
-from bitcoin import *
+from .util import user_dir, appdata_dir, print_error
+from .bitcoin import *
 from ltc_scrypt import getPoWHash
-from kgw import KGW
+from .kgw import KGW
 
 
 class Blockchain(threading.Thread):

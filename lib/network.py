@@ -1,8 +1,8 @@
 import threading, time, Queue, os, sys, shutil, random
-from util import user_dir, appdata_dir, print_error, print_msg
-from bitcoin import *
+from .util import user_dir, appdata_dir, print_error, print_msg
+from .bitcoin import *
 import interface
-from blockchain import Blockchain
+from .blockchain import Blockchain
 
 DEFAULT_PORTS = {'t': '50001', 's': '50002', 'h': '8081', 'g': '8082'}
 

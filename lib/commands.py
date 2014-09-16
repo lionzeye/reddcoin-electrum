@@ -19,11 +19,11 @@
 import datetime
 import time
 import copy
-from util import print_msg, format_satoshis, print_stderr
-from bitcoin import is_valid, hash_160_to_bc_address, hash_160
+from .util import print_msg, format_satoshis, print_stderr
+from .bitcoin import is_valid, hash_160_to_bc_address, hash_160
 from decimal import Decimal
 import bitcoin
-from transaction import Transaction
+from .transaction import Transaction
 
 
 class Command:

@@ -26,9 +26,9 @@ import json
 import Queue
 
 import util
-from network import Network
-from util import print_error, print_stderr, parse_json
-from simple_config import SimpleConfig
+from .network import Network
+from .util import print_error, print_stderr, parse_json
+from .simple_config import SimpleConfig
 
 DAEMON_PORT=8001
 

@@ -26,10 +26,10 @@ import json
 import Queue
 
 import util
-from network import Network
-from util import print_error, print_stderr, parse_json
-from simple_config import SimpleConfig
-from daemon import NetworkServer, DAEMON_PORT
+from .network import Network
+from .util import print_error, print_stderr, parse_json
+from .simple_config import SimpleConfig
+from .daemon import NetworkServer, DAEMON_PORT
 
 
 class NetworkProxy(threading.Thread):

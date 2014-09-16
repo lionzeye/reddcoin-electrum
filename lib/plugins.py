@@ -1,7 +1,6 @@
-from util import print_error
 import traceback, sys
-from util import *
-from i18n import _
+from .util import *
+from .i18n import _
 
 plugins = []
 

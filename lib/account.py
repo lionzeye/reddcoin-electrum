@@ -17,10 +17,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import bitcoin
-from bitcoin import *
-from i18n import _
-from transaction import Transaction, is_extended_pubkey
-from util import print_msg
+from .bitcoin import *
+from .i18n import _
+from .transaction import Transaction, is_extended_pubkey
+from .util import print_msg
 
 
 class Account(object):

@@ -9,9 +9,9 @@ from electrum import bitcoin
 from electrum import util
 
 import seed_dialog
-from network_dialog import NetworkDialog
-from util import *
-from amountedit import AmountEdit
+from .network_dialog import NetworkDialog
+from .util import *
+from .amountedit import AmountEdit
 
 import sys
 import threading

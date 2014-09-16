@@ -27,17 +27,17 @@ import math
 import json
 import copy
 
-from util import print_msg, print_error
+from .util import print_msg, print_error
 
-from bitcoin import *
-from account import *
-from version import *
+from .bitcoin import *
+from .account import *
+from .version import *
 
-from transaction import Transaction
-from plugins import run_hook
+from .transaction import Transaction
+from .plugins import run_hook
 import bitcoin
-from synchronizer import WalletSynchronizer
-from mnemonic import Mnemonic
+from .synchronizer import WalletSynchronizer
+from .mnemonic import Mnemonic
 
 
 
