@@ -24,11 +24,11 @@ If `setup.py` fails with "ImportError: No module named setuptools", install pyth
 
 Then you can run it from any directory:
 
-    electrum
+    reddcoin-electrum
 
 Or you can run it from the source code directory:
 
-    ./electrum
+    ./reddcoin-electrum
 
 
 Install in a Virtualenv (advanced)
@@ -65,7 +65,7 @@ Create the icons
 
     pyrcc4 icons.qrc -o gui/qt/icons_rc.py
 
-Install Electrum
+Install Reddcoin Electrum
 
     python setup.py install
 
