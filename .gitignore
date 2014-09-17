@@ -1,6 +1,4 @@
 ####-*.patch
-gui/icons_rc.py
-lib/icons_rc.py
 *.pyc
 *.swp
 build/
@@ -16,4 +14,3 @@ locale/
 *_trial_temp
 .idea/
 tmp/
-reddcoin-electrum.spec
