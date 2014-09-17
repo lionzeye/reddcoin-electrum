@@ -73,12 +73,19 @@ Install Reddcoin Electrum
 How to Create Official Packages
 ------------------------------------
 
+On Linux:
+
+    export VERSION=2.0.0
+    pip install git+https://github.com/reddcoin-project/reddcoin-electrum.git@v$VERSION
+
 On Windows:
 
+    export VERSION=2.0.0
     pyinstaller windows.spec
+    zip -r dist/reddcoin-electrum-$VERSION-win.zip dist/reddcoin-electrum.exe
 
 On Mac OS X:
 
     export VERSION=2.0.0
     pyinstaller macosx.spec
-    sudo hdiutil create -fs HFS+ -volname "Reddcoin Electrum" -srcfolder "dist/Reddcoin Electrum.app" dist/reddcoin-electrum-$VERSION.dmg
+    sudo hdiutil create -fs HFS+ -volname "Reddcoin Electrum" -srcfolder "dist/Reddcoin Electrum.app" dist/reddcoin-electrum-$VERSION-mac.dmg
