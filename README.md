@@ -72,15 +72,13 @@ Install Reddcoin Electrum
 
 How to Create Official Packages
 ------------------------------------
-python mki18n.py
-pyrcc4 icons.qrc -o gui/qt/icons_rc.py
-python setup.py sdist --format=zip,gztar
+
+On Windows:
+
+    pyinstaller windows.spec
 
 On Mac OS X:
 
-    # On port based installs
-    sudo python setup-release.py py2app
-
-    # On brew installs
-    ARCHFLAGS="-arch i386 -arch x86_64" sudo python setup-release.py py2app --includes sip
-    sudo hdiutil create -fs HFS+ -volname "Reddcoin Electrum" -srcfolder dist/Electrum.app dist/electrum-VERSION-macosx.dmg
+    export VERSION=2.0.0
+    pyinstaller macosx.spec
+    sudo hdiutil create -fs HFS+ -volname "Reddcoin Electrum" -srcfolder "dist/Reddcoin Electrum.app" dist/reddcoin-electrum-$VERSION.dmg
