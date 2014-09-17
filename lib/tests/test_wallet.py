@@ -6,7 +6,7 @@ import os
 import json
 
 from StringIO import StringIO
-from lib.wallet import WalletStorage, NewWallet
+from ..wallet import WalletStorage, NewWallet
 
 
 class FakeConfig(object):
@@ -71,11 +71,11 @@ class TestWalletStorage(WalletTestCase):
         storage = WalletStorage(self.fake_config)
         self.assertEqual(path, storage.path)
 
-    def test_read_dictionnary_from_file(self):
+    def test_read_dictionary_from_file(self):
         path = os.path.join(self.user_dir, "somewallet")
         self.fake_config.set("wallet_path", path)
 
-        some_dict = {"a":"b", "c":"d"}
+        some_dict = {"a": "b", "c": "d"}
         contents = repr(some_dict)
         with open(path, "w") as f:
             contents = f.write(contents)
@@ -90,7 +90,7 @@ class TestWalletStorage(WalletTestCase):
 
         storage = WalletStorage(self.fake_config)
 
-        some_dict = {"a":"b", "c":"d"}
+        some_dict = {"a": "b", "c": "d"}
         storage.data = some_dict
 
         storage.write()
@@ -108,8 +108,8 @@ class TestNewWallet(WalletTestCase):
 
     first_account_name = "account1"
 
-    import_private_key = "L52XzL2cMkHxqxBXRyEpnPQZGUs3uKiL3R11XbAdHigRzDozKZeW"
-    import_key_address = "15mKKb2eos1hWa6tisdPwwDC1a5J1y9nma"
+    import_private_key = "UyCikgbdBb36n5EZLCW4sxea5jX3ByPCaVRGn8kiBNsg3LTAoQUG"
+    import_key_address = "RqAahY1pTk1q417ALF4ScYGLWthphAGaHW"
 
     def setUp(self):
         super(TestNewWallet, self).setUp()

@@ -1,5 +1,6 @@
 import unittest
-from lib.util import format_satoshis, parse_URI
+from ..util import format_satoshis, parse_URI
+
 
 class TestUtil(unittest.TestCase):
 
@@ -30,7 +31,7 @@ class TestUtil(unittest.TestCase):
         self._do_test_parse_URI('reddcoin:RqAahY1pTk1q417ALF4ScYGLWthphAGaHW', 'RqAahY1pTk1q417ALF4ScYGLWthphAGaHW', '', '', '', '')
 
     def test_parse_URI_only_address(self):
-        self._do_test_parse_URI('reddcoin:RqAahY1pTk1q417ALF4ScYGLWthphAGaHW', 'RqAahY1pTk1q417ALF4ScYGLWthphAGaHW', None, None, None, None)
+        self._do_test_parse_URI('RqAahY1pTk1q417ALF4ScYGLWthphAGaHW', 'RqAahY1pTk1q417ALF4ScYGLWthphAGaHW', None, None, None, None)
 
     def test_parse_URI_address_label(self):
         self._do_test_parse_URI('reddcoin:RqAahY1pTk1q417ALF4ScYGLWthphAGaHW?label=electrum%20test', 'RqAahY1pTk1q417ALF4ScYGLWthphAGaHW', '', 'electrum test', '', '')
@@ -61,4 +62,3 @@ class TestUtil(unittest.TestCase):
 
     def test_parse_URI_parameter_polution(self):
         self.assertRaises(Exception, parse_URI, 'reddcoin:RqAahY1pTk1q417ALF4ScYGLWthphAGaHW?amount=0.0003&label=test&amount=30.0')
-

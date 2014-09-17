@@ -2,7 +2,7 @@ import unittest
 import sys
 from ecdsa.util import number_to_string
 
-from lib.bitcoin import (
+from ..bitcoin import (
     generator_secp256k1, point_to_ser, public_key_to_bc_address, EC_KEY,
     bip32_root, bip32_public_derivation, bip32_private_derivation, pw_encode,
     pw_decode, Hash, public_key_from_private_key, address_from_private_key,
@@ -140,9 +140,9 @@ class Test_keyImport(unittest.TestCase):
     """ The keys used in this class are TEST keys from
         https://en.bitcoin.it/wiki/BIP_0032_TestVectors"""
 
-    private_key = "L52XzL2cMkHxqxBXRyEpnPQZGUs3uKiL3R11XbAdHigRzDozKZeW"
-    public_key_hex = "0339a36013301597daef41fbe593a02cc513d0b55527ec2df1050e2e8ff49c85c2"
-    main_address = "15mKKb2eos1hWa6tisdPwwDC1a5J1y9nma"
+    private_key = "UyCikgbdBb36n5EZLCW4sxea5jX3ByPCaVRGn8kiBNsg3LTAoQUG"
+    public_key_hex = "020826026689880c7bfcdb56a96b166cb9cf6241662b371ff9110b99f92b59239f"
+    main_address = "RqAahY1pTk1q417ALF4ScYGLWthphAGaHW"
 
     def test_public_key_from_private_key(self):
         result = public_key_from_private_key(self.private_key)

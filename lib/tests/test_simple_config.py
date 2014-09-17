@@ -6,8 +6,7 @@ import tempfile
 import shutil
 
 from StringIO import StringIO
-from lib.simple_config import (SimpleConfig, read_system_config,
-                               read_user_config)
+from ..simple_config import (SimpleConfig, read_system_config, read_user_config)
 
 
 class Test_SimpleConfig(unittest.TestCase):
@@ -38,9 +37,9 @@ class Test_SimpleConfig(unittest.TestCase):
     def test_simple_config_command_line_overrides_everything(self):
         """Options passed by command line override all other configuration
         sources"""
-        fake_read_system = lambda : {"electrum_path": "a"}
+        fake_read_system = lambda: {"electrum_path": "a"}
         fake_read_user = lambda _: {"electrum_path": "b"}
-        read_user_dir = lambda : self.user_dir
+        read_user_dir = lambda: self.user_dir
         config = SimpleConfig(options=self.options,
                               read_system_config_function=fake_read_system,
                               read_user_config_function=fake_read_user,
@@ -50,9 +49,9 @@ class Test_SimpleConfig(unittest.TestCase):
 
     def test_simple_config_system_config_overrides_user_config(self):
         """Options passed in system config override user config."""
-        fake_read_system = lambda : {"electrum_path": self.electrum_dir}
+        fake_read_system = lambda: {"electrum_path": self.electrum_dir}
         fake_read_user = lambda _: {"electrum_path": "b"}
-        read_user_dir = lambda : self.user_dir
+        read_user_dir = lambda: self.user_dir
         config = SimpleConfig(options=None,
                               read_system_config_function=fake_read_system,
                               read_user_config_function=fake_read_user,
@@ -64,9 +63,9 @@ class Test_SimpleConfig(unittest.TestCase):
         """If electrum is started with the "portable" flag, system
         configuration is completely ignored."""
         another_path = tempfile.mkdtemp()
-        fake_read_system = lambda : {"electrum_path": self.electrum_dir}
+        fake_read_system = lambda: {"electrum_path": self.electrum_dir}
         fake_read_user = lambda _: {"electrum_path": another_path}
-        read_user_dir = lambda : self.user_dir
+        read_user_dir = lambda: self.user_dir
         config = SimpleConfig(options={"portable": True},
                               read_system_config_function=fake_read_system,
                               read_user_config_function=fake_read_user,
@@ -76,9 +75,9 @@ class Test_SimpleConfig(unittest.TestCase):
     def test_simple_config_user_config_is_used_if_others_arent_specified(self):
         """If no system-wide configuration and no command-line options are
         specified, the user configuration is used instead."""
-        fake_read_system = lambda : {}
+        fake_read_system = lambda: {}
         fake_read_user = lambda _: {"electrum_path": self.electrum_dir}
-        read_user_dir = lambda : self.user_dir
+        read_user_dir = lambda: self.user_dir
         config = SimpleConfig(options=None,
                               read_system_config_function=fake_read_system,
                               read_user_config_function=fake_read_user,
@@ -87,9 +86,9 @@ class Test_SimpleConfig(unittest.TestCase):
                          config.get("electrum_path"))
 
     def test_cannot_set_options_passed_by_command_line(self):
-        fake_read_system = lambda : {}
+        fake_read_system = lambda: {}
         fake_read_user = lambda _: {"electrum_path": "b"}
-        read_user_dir = lambda : self.user_dir
+        read_user_dir = lambda: self.user_dir
         config = SimpleConfig(options=self.options,
                               read_system_config_function=fake_read_system,
                               read_user_config_function=fake_read_user,
@@ -99,9 +98,9 @@ class Test_SimpleConfig(unittest.TestCase):
                          config.get("electrum_path"))
 
     def test_cannot_set_options_from_system_config(self):
-        fake_read_system = lambda : {"electrum_path": self.electrum_dir}
+        fake_read_system = lambda: {"electrum_path": self.electrum_dir}
         fake_read_user = lambda _: {}
-        read_user_dir = lambda : self.user_dir
+        read_user_dir = lambda: self.user_dir
         config = SimpleConfig(options={},
                               read_system_config_function=fake_read_system,
                               read_user_config_function=fake_read_user,
@@ -112,9 +111,9 @@ class Test_SimpleConfig(unittest.TestCase):
 
     def test_can_set_options_set_in_user_config(self):
         another_path = tempfile.mkdtemp()
-        fake_read_system = lambda : {}
+        fake_read_system = lambda: {}
         fake_read_user = lambda _: {"electrum_path": self.electrum_dir}
-        read_user_dir = lambda : self.user_dir
+        read_user_dir = lambda: self.user_dir
         config = SimpleConfig(options={},
                               read_system_config_function=fake_read_system,
                               read_user_config_function=fake_read_user,
@@ -126,9 +125,9 @@ class Test_SimpleConfig(unittest.TestCase):
         """If the "portable" flag is set, the user can overwrite system
         configuration options."""
         another_path = tempfile.mkdtemp()
-        fake_read_system = lambda : {"electrum_path": self.electrum_dir}
+        fake_read_system = lambda: {"electrum_path": self.electrum_dir}
         fake_read_user = lambda _: {}
-        read_user_dir = lambda : self.user_dir
+        read_user_dir = lambda: self.user_dir
         config = SimpleConfig(options={"portable": True},
                               read_system_config_function=fake_read_system,
                               read_user_config_function=fake_read_user,
@@ -139,9 +138,9 @@ class Test_SimpleConfig(unittest.TestCase):
     def test_user_config_is_not_written_with_read_only_config(self):
         """The user config does not contain command-line options or system
         options when saved."""
-        fake_read_system = lambda : {"something": "b"}
+        fake_read_system = lambda: {"something": "b"}
         fake_read_user = lambda _: {"something": "a"}
-        read_user_dir = lambda : self.user_dir
+        read_user_dir = lambda: self.user_dir
         self.options.update({"something": "c"})
         config = SimpleConfig(options=self.options,
                               read_system_config_function=fake_read_system,
@@ -171,7 +170,7 @@ everything = 42
 
     def tearDown(self):
         super(TestSystemConfig, self).tearDown()
-        os.remove(self.thefile)
+        # os.remove(self.thefile)
 
     def test_read_system_config_file_does_not_exist(self):
         somefile = "/foo/I/do/not/exist/electrum.conf"
@@ -210,8 +209,8 @@ class TestUserConfig(unittest.TestCase):
         sys.stdout = self._saved_stdout
 
     def test_no_path_means_no_result(self):
-       result = read_user_config(None)
-       self.assertEqual({}, result)
+        result = read_user_config(None)
+        self.assertEqual({}, result)
 
     def test_path_with_reprd_dict(self):
         thefile = os.path.join(self.user_dir, "config")
