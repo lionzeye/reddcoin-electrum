@@ -51,23 +51,23 @@ class Test_bitcoin(unittest.TestCase):
     def test_bip32(self):
         # see https://en.bitcoin.it/wiki/BIP_0032_TestVectors
         xpub, xprv = self._do_test_bip32("000102030405060708090a0b0c0d0e0f", "m/0'/1/2'/2/1000000000", testnet=False)
-        assert xpub == "xpub6H1LXWLaKsWFhvm6RVpEL9P4KfRZSW7abD2ttkWP3SSQvnyA8FSVqNTEcYFgJS2UaFcxupHiYkro49S8yGasTvXEYBVPamhGW6cFJodrTHy"
-        assert xprv == "xprvA41z7zogVVwxVSgdKUHDy1SKmdb533PjDz7J6N6mV6uS3ze1ai8FHa8kmHScGpWmj4WggLyQjgPie1rFSruoUihUZREPSL39UNdE3BBDu76"
+        assert xpub == "xpub6G57jZrwk73raTVL6vAFwbv2pV2TwNuBodmQfB6MpxYfwNJ9V8cQ3SC7ujwahk413MmFb6yXPzQq34vkeJ2tNwb2v6bfEu6kZnEd7Zksjrh"
+        assert xprv == "xprvA35mL4L3ujVZMyQrztdFaTyJGTByXvBLSQqorngkGd1h4ZxzwbJ9Vdse4UHoYsWGdoe6cMJQNDbka6cxrbPnhzoh89FCCfLQA6ejFDpQubQ"
 
         xpub, xprv = self._do_test_bip32("fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542",
                                          "m/0/2147483647'/1/2147483646'/2", testnet=False)
-        assert xpub == "xpub6FnCn6nSzZAw5Tw7cgR9bi15UV96gLZhjDstkXXxvCLsUXBGXPdSnLFbdpq8p9HmGsApME5hQTZ3emM2rnY5agb9rXpVGyy3bdW6EEgAtqt"
-        assert xprv == "xprvA2nrNbFZABcdryreWet9Ea4LvTJcGsqrMzxHx98MMrotbir7yrKCEXw7nadnHM8Dq38EGfSh6dqA9QWTyefMLEcBYJUuekgW4BYPJcr9E7j"
+        assert xpub == "xpub6GesmaqrUhnzgqk5wxBBH8NhV5qMXbb7969ThVyh2BKPBzSZJix1dyFN6eJTW5gpWrFyXyNvMsawmJVrB4xpBvJWybUcuVC97AhqZehEcJb"
+        assert xprv == "xprvA3fXN5JxeLEhUMfcqveAuzRxw3zs88sFmsDru7a5TqnQKC7QmBdm6AvtFN17RVwoFt354TTaNy7ZQodWSzffzXmcJxYc41pxqCDK7Cryi7r"
 
     def test_bip32_testnet(self):
         xpub, xprv = self._do_test_bip32("000102030405060708090a0b0c0d0e0f", "m/0'/1/2'/2/1000000000", testnet=True)
-        assert xpub == "tpubDHNy3kAG39ThyiwwsgoKY4iRenXDRtce8qdCFJZXPMCJg5dsCUHayp84raLTpvyiNA9sXPob5rgqkKvkN8S7MMyXbnEhGJMW64Cf4vFAoaF"
-        assert xprv == "tprv8kgvuL81tmn36Fv9z38j8f4K5m1HGZRjZY2QxnXDy5PuqbP6a5TzoKWCgTcGHBu66W3TgSbAu2yX6sPza5FkHmy564Sh6gmCPUNeUt4yj2x"
+        assert xpub == "tpubDGSkFogdTP1JrFgBZ79M9XFQ9c87vmQFMGMi1j9WAsJZgexrZMTVBsrx9n2NEF1EqGJACgVPw6EsjFRN39t8GP3KyhLxvRkz9jq2seaqhyE"
+        assert xprv == "tprv8jki7PePK1KdxnePfTUkk7bHaacBmSDLmxkvjD7CkbWArAi5vxdu1PF5yeTTZEtb1FAscSvAXaBZ2xAhyojjX45HenTVs24T5CQ9gsWp48F"
 
         xpub, xprv = self._do_test_bip32("fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542",
                                          "m/0/2147483647'/1/2147483646'/2", testnet=True)
-        assert xpub == "tpubDG9qJLc8hq8PMG7y4sQEodLSocEkfj4mGrUC75b7G76mDoqybcUXvmvRsruvLeF14mhixobZwZP6LwqeFePKU83Sv8ZnxWdHBb6VzE6zbvC"
-        assert xprv == "tprv8jTo9vZtZTSiTo6BBDjeQDgLEaipWPsrhYsQpZYoqqJNPKbCyDewkHJZhkoSHiWYCUf1Gm4TFzQxcG4D6s1J9Hsn4whDK7QYyHHokJeUuac"
+        assert xpub == "tpubDH2WHpfYBykSxdvwQ9AGV3i4pCw1Wz6Agijm442qN65GwH7GNwo6nQvCLgPF2ae4Jknt9YtntyQzTUzTZvp45Mkp3CDvb1rNh8JFKg19W1E"
+        assert xprv == "tprv8kLU9QdJ3c4n5Au9WVVg5e3xFBR5MeuG7R8ymXzXwpGt6nrVkYyWbvJLAYAmRsL7dKZr4Z5LYKhMsfBFaD1cob3CqbkuiNZ1kHxjYwwjePJ"
 
     def _do_test_bip32(self, seed, sequence, testnet):
         xprv, xpub = bip32_root(seed.decode('hex'), testnet)
