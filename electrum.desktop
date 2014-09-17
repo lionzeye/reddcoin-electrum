@@ -2,15 +2,15 @@
 # sudo desktop-file-install electrum.desktop
 
 [Desktop Entry]
-Comment=Lightweight Bitcoin Client
-Exec=electrum %u
-GenericName[en_US]=Electrum
-GenericName=Electrum
+Comment=Reddcoin Electrum Wallet
+Exec=reddcoin-electrum %u
+GenericName[en_US]=Reddcoin Electrum Wallet
+GenericName=Reddcoin Electrum Wallet
 Icon=/usr/share/app-install/icons/electrum.png
-Name[en_US]=Electrum Bitcoin Wallet
-Name=Electrum Bitcoin Wallet
+Name[en_US]=Reddcoin Electrum Wallet
+Name=Reddcoin Electrum Wallet
 Categories=Network;
 StartupNotify=false
 Terminal=false
 Type=Application
-MimeType=x-scheme-handler/bitcoin
+MimeType=x-scheme-handler/reddcoin
