@@ -18,8 +18,8 @@ from lib.util import print_error
 from lib.version import ELECTRUM_VERSION as version
 
 
-name = "Electrum"
-mainscript = 'electrum'
+name = "Reddcoin Electrum"
+mainscript = 'reddcoin-electrum'
 
 if sys.version_info[:3] < (2, 6, 0):
     print_error("Error: " + name + " requires Python version >= 2.6.0...")
@@ -66,7 +66,7 @@ if sys.platform == 'darwin':
     os.remove(mainscript)
     resource = "dist/" + name + ".app/Contents/Resources/"
 
-    dir_util.copy_tree("locale", resource + "locale/")
+    # dir_util.copy_tree("locale", resource + "locale/")
     # Try to locate qt_menu
     # Let's try the port version first!
     if os.path.isfile("/opt/local/lib/Resources/qt_menu.nib"):
