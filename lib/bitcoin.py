@@ -22,19 +22,12 @@ import base64
 import re
 import sys
 import hmac
+import ecdsa
 
+import aes
 import version
 from .util import print_error
 
-try:
-    import ecdsa
-except ImportError:
-    sys.exit("Error: python-ecdsa does not seem to be installed. Try 'sudo pip install ecdsa'")
-
-try:
-    import aes
-except ImportError:
-    sys.exit("Error: AES does not seem to be installed. Try 'sudo pip install slowaes'")
 
 ################################## transactions
 

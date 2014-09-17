@@ -43,9 +43,18 @@ if sys.platform == 'darwin':
                                  resources=["data", "icons"])),
     )
 elif sys.platform == 'win32':
+    import py2exe
     extra_options = dict(
         setup_requires=['py2exe'],
-        app=[mainscript],
+        windows=[{'script': mainscript, 'icon_resources': [(0, 'icons/electrum.ico')]}],
+        options={"py2exe": {
+            'bundle_files': 1,
+            'compressed': True,
+            'includes': ['PyQt4.QtCore', 'PyQt4.QtGui', 'PyQt4.QtWebKit', 'PyQt4.QtNetwork',
+                         'sip', 'anydbm', 'dumbdbm'],
+            'packages': ['lib', 'gui', 'gui.qt', 'plugins',
+                         'lib.tlslite', 'lib.tlslite.utils', 'lib.tlslite.integration'],
+        }}
     )
 else:
     extra_options = dict(

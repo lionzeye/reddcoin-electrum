@@ -31,6 +31,7 @@ from electrum import SimpleConfig, Network, Wallet, WalletStorage, NetworkProxy,
 from electrum.util import print_msg, print_stderr, print_json, set_verbosity
 from electrum.daemon import get_daemon
 from electrum.plugins import init_plugins
+from electrum_gui.qt import main_window
 
 
 # get password routine
