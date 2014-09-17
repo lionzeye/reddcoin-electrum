@@ -48,15 +48,15 @@ wine $WINEPREFIX/drive_c/Python27/Lib/site-packages/PyQt4/pyrcc4.exe C:/reddcoin
 # Copy ZBar libraries to electrum
 #cp "$WINEPREFIX/drive_c/Program Files (x86)/ZBar/bin/"*.dll "$WINEPREFIX/drive_c/electrum/"
 
-cd ..
+cd reddcoin-electrum
+$PYTHON setup.py install
+
+cd ../..
 
 rm -rf dist/
 
-# For building standalone compressed EXE, run:
-$PYTHON "C:/pyinstaller/pyinstaller.py" --noconfirm --ascii -w --onefile "C:/reddcoin-electrum/reddcoin-electrum"
-
 # For building uncompressed directory of dependencies, run:
-$PYTHON "C:/pyinstaller/pyinstaller.py" --noconfirm --ascii -w deterministic.spec
+$PYTHON "C:/pyinstaller/pyinstaller.py" -a -y deterministic.spec
 
 # For building NSIS installer, run:
 wine "$WINEPREFIX/drive_c/Program Files/NSIS/makensis.exe" electrum.nsi
