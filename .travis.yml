@@ -1,5 +1,8 @@
 language: python
 python:
-    - "2.7"
-install: "pip install ecdsa>=0.9 pbkdf2 requests pyasn1 pyasn1-modules qrcode"
+- '2.7'
+install: pip install ecdsa>=0.9 pbkdf2 requests pyasn1 pyasn1-modules qrcode
 script: nosetests -e gui
+notifications:
+  slack:
+    secure: CrnsKhIfmatxdI224fBsDUB+Bx9K8GzLdaFfVAMBPKe/Ct1G+x6MFa98pdSnYjwogNqurvExNPlkM/yb8KLusuG+q/x5+CNHe4cHvuQ2WHlKBVj2Yg6KG4VeO/xZSKnM3CylpcWwIjnPoa1OyAYY9UVpsWhhwqE6NPHghMM48GM=
