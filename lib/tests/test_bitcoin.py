@@ -22,17 +22,17 @@ class Test_bitcoin(unittest.TestCase):
 
     def _do_test_crypto(self, message):
         G = generator_secp256k1
-        _r  = G.order()
-        pvk = ecdsa.util.randrange( pow(2,256) ) %_r
+        _r = G.order()
+        pvk = ecdsa.util.randrange(pow(2, 256)) %_r
 
         Pub = pvk*G
-        pubkey_c = point_to_ser(Pub,True)
+        pubkey_c = point_to_ser(Pub, True)
         #pubkey_u = point_to_ser(Pub,False)
         addr_c = public_key_to_bc_address(pubkey_c)
         #addr_u = public_key_to_bc_address(pubkey_u)
 
         #print "Private key            ", '%064x'%pvk
-        eck = EC_KEY(number_to_string(pvk,_r))
+        eck = EC_KEY(number_to_string(pvk, _r))
 
         #print "Compressed public key  ", pubkey_c.encode('hex')
         enc = EC_KEY.encrypt_message(message, pubkey_c)
@@ -54,7 +54,8 @@ class Test_bitcoin(unittest.TestCase):
         assert xpub == "xpub6H1LXWLaKsWFhvm6RVpEL9P4KfRZSW7abD2ttkWP3SSQvnyA8FSVqNTEcYFgJS2UaFcxupHiYkro49S8yGasTvXEYBVPamhGW6cFJodrTHy"
         assert xprv == "xprvA41z7zogVVwxVSgdKUHDy1SKmdb533PjDz7J6N6mV6uS3ze1ai8FHa8kmHScGpWmj4WggLyQjgPie1rFSruoUihUZREPSL39UNdE3BBDu76"
 
-        xpub, xprv = self._do_test_bip32("fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542","m/0/2147483647'/1/2147483646'/2", testnet=False)
+        xpub, xprv = self._do_test_bip32("fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542",
+                                         "m/0/2147483647'/1/2147483646'/2", testnet=False)
         assert xpub == "xpub6FnCn6nSzZAw5Tw7cgR9bi15UV96gLZhjDstkXXxvCLsUXBGXPdSnLFbdpq8p9HmGsApME5hQTZ3emM2rnY5agb9rXpVGyy3bdW6EEgAtqt"
         assert xprv == "xprvA2nrNbFZABcdryreWet9Ea4LvTJcGsqrMzxHx98MMrotbir7yrKCEXw7nadnHM8Dq38EGfSh6dqA9QWTyefMLEcBYJUuekgW4BYPJcr9E7j"
 
@@ -63,7 +64,8 @@ class Test_bitcoin(unittest.TestCase):
         assert xpub == "tpubDHNy3kAG39ThyiwwsgoKY4iRenXDRtce8qdCFJZXPMCJg5dsCUHayp84raLTpvyiNA9sXPob5rgqkKvkN8S7MMyXbnEhGJMW64Cf4vFAoaF"
         assert xprv == "tprv8kgvuL81tmn36Fv9z38j8f4K5m1HGZRjZY2QxnXDy5PuqbP6a5TzoKWCgTcGHBu66W3TgSbAu2yX6sPza5FkHmy564Sh6gmCPUNeUt4yj2x"
 
-        xpub, xprv = self._do_test_bip32("fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542","m/0/2147483647'/1/2147483646'/2", testnet=True)
+        xpub, xprv = self._do_test_bip32("fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542",
+                                         "m/0/2147483647'/1/2147483646'/2", testnet=True)
         assert xpub == "tpubDG9qJLc8hq8PMG7y4sQEodLSocEkfj4mGrUC75b7G76mDoqybcUXvmvRsruvLeF14mhixobZwZP6LwqeFePKU83Sv8ZnxWdHBb6VzE6zbvC"
         assert xprv == "tprv8jTo9vZtZTSiTo6BBDjeQDgLEaipWPsrhYsQpZYoqqJNPKbCyDewkHJZhkoSHiWYCUf1Gm4TFzQxcG4D6s1J9Hsn4whDK7QYyHHokJeUuac"
 
@@ -159,5 +161,3 @@ class Test_keyImport(unittest.TestCase):
     def test_is_private_key(self):
         self.assertTrue(is_private_key(self.private_key))
         self.assertFalse(is_private_key(self.public_key_hex))
-
-

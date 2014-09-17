@@ -40,7 +40,6 @@ from .synchronizer import WalletSynchronizer
 from .mnemonic import Mnemonic
 
 
-
 # internal ID for imported account
 IMPORTED_ACCOUNT = '/x'
 
