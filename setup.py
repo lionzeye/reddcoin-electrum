@@ -57,7 +57,7 @@ for lang in os.listdir('data/wordlist'):
     data_files.append((os.path.join(appdata_dir, 'wordlist'), ['data/wordlist/%s' % lang]))
 
 setup(
-    name="Reddcoin Electrum",
+    name="reddcoin electrum",
     version=version.ELECTRUM_VERSION,
     install_requires=['ecdsa>=0.9', 'pbkdf2', 'requests', 'pyasn1', 'pyasn1-modules', 'qrcode', 'numpy'],
     packages=['electrum', 'electrum_gui', 'electrum_gui.qt', 'electrum_plugins',
