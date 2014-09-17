@@ -46,7 +46,7 @@ Somewhere create a virtualenv and enter it
 Install dependencies
 
     pip install --pre slowaes
-    pip install ecdsa pbkdf2 requests pyasn1 pyasn1-modules qrcode tlslite numpy ltc_scrypt
+    pip install ecdsa pbkdf2 requests pyasn1 pyasn1-modules qrcode tlslite numpy
 
 PyQt4 is not available from pip and it is a PITA to build yourself anyway, install it
 through your distribution and link it into the virtualenv folder. Note that the system

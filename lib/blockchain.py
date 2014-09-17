@@ -18,9 +18,9 @@
 
 
 import threading, time, Queue, os, sys, shutil, traceback
+from .scrypt import scrypt_1024_1_1_80 as getPoWHash
 from .util import user_dir, appdata_dir, print_error
 from .bitcoin import *
-from ltc_scrypt import getPoWHash
 from .kgw import KGW
 
 
