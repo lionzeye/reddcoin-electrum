@@ -380,7 +380,7 @@ def is_valid(addr):
 
 
 def is_address(addr):
-    ADDRESS_RE = re.compile('[1-9A-HJ-NP-Za-km-z]{26,}\\Z')
+    ADDRESS_RE = re.compile('R[1-9A-HJ-NP-Za-km-z]{33}\\Z')
     if not ADDRESS_RE.match(addr): return False
     try:
         addrtype, h = bc_address_to_hash_160(addr)
