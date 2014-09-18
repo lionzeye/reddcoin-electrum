@@ -124,7 +124,7 @@ class NetworkProxy(threading.Thread):
                     print_error("received unexpected notification", method, params)
                     return
 
-        r = {'method':method, 'params':params, 'result':result, 'id':msg_id, 'error':error}
+        r = {'method': method, 'params': params, 'result': result, 'id': msg_id, 'error': error}
         callback(r)
 
     def send(self, messages, callback):

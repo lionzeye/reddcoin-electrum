@@ -23,22 +23,17 @@ import socks
 import socket
 import ssl
 
+import x509
+import util
 from .version import ELECTRUM_VERSION, PROTOCOL_VERSION
 from .util import print_error, print_msg
 from .simple_config import SimpleConfig
-
-import x509
 
 DEFAULT_TIMEOUT = 5
 proxy_modes = ['socks4', 'socks5', 'http']
 
 
-import util
-
-
-
-
-def Interface(server, config = None):
+def Interface(server, config=None):
     host, port, protocol = server.split(':')
     port = int(port)
     if protocol in 'st':
@@ -46,11 +41,12 @@ def Interface(server, config = None):
     elif protocol in 'hg':
         return HttpInterface(server, config)
     else:
-        raise Exception('Unknown protocol: %s'%protocol)
+        raise Exception('Unknown protocol: %s' % protocol)
+
 
 class TcpInterface(threading.Thread):
 
-    def __init__(self, server, config = None):
+    def __init__(self, server, config=None):
         threading.Thread.__init__(self)
         self.daemon = True
         self.config = config if config is not None else SimpleConfig()
@@ -68,11 +64,10 @@ class TcpInterface(threading.Thread):
         self.server = server
         self.host, self.port, self.protocol = self.server.split(':')
         self.port = int(self.port)
-        self.use_ssl = (self.protocol == 's')
+        self.use_ssl = (self.protocol == 's' or self.protocol == 'g')
         self.proxy = self.parse_proxy_options(self.config.get('proxy'))
         if self.proxy:
             self.proxy_mode = proxy_modes.index(self.proxy["mode"]) + 1
-
 
     def process_response(self, response):
         if self.debug:
@@ -111,10 +106,9 @@ class TcpInterface(threading.Thread):
             return
 
         if error:
-            queue.put((self, {'method':method, 'params':params, 'error':error, 'id':_id}))
+            queue.put((self, {'method': method, 'params': params, 'error': error, 'id': _id}))
         else:
-            queue.put((self, {'method':method, 'params':params, 'result':result, 'id':_id}))
-
+            queue.put((self, {'method': method, 'params': params, 'result': result, 'id': _id}))
 
     def get_socket(self):
 
@@ -127,7 +121,7 @@ class TcpInterface(threading.Thread):
             socket.getaddrinfo = getaddrinfo
 
         if self.use_ssl:
-            cert_path = os.path.join( self.config.path, 'certs', self.host)
+            cert_path = os.path.join(self.config.path, 'certs', self.host)
             if not os.path.exists(cert_path):
                 is_new = True
                 # get server certificate.
@@ -140,7 +134,7 @@ class TcpInterface(threading.Thread):
 
                 for res in l:
                     try:
-                        s = socket.socket( res[0], socket.SOCK_STREAM )
+                        s = socket.socket(res[0], socket.SOCK_STREAM)
                         s.connect(res[4])
                     except:
                         s = None
@@ -186,7 +180,7 @@ class TcpInterface(threading.Thread):
 
         for res in addrinfo:
             try:
-                s = socket.socket( res[0], socket.SOCK_STREAM )
+                s = socket.socket(res[0], socket.SOCK_STREAM)
                 s.settimeout(2)
                 s.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
                 s.connect(res[4])
@@ -204,7 +198,7 @@ class TcpInterface(threading.Thread):
                 s = ssl.wrap_socket(s,
                                     ssl_version=ssl.PROTOCOL_SSLv3,
                                     cert_reqs=ssl.CERT_REQUIRED,
-                                    ca_certs= (temporary_path if is_new else cert_path),
+                                    ca_certs=(temporary_path if is_new else cert_path),
                                     do_handshake_on_connect=True)
             except ssl.SSLError, e:
                 print_error("SSL error:", self.host, e)
@@ -244,7 +238,6 @@ class TcpInterface(threading.Thread):
                 os.rename(temporary_path, cert_path)
 
         return s
-        
 
     def send_request(self, request, queue=None):
         _id = request.get('id')
@@ -252,7 +245,7 @@ class TcpInterface(threading.Thread):
         params = request.get('params')
         with self.lock:
             try:
-                r = {'id':self.message_id, 'method':method, 'params':params}
+                r = {'id': self.message_id, 'method': method, 'params': params}
                 self.pipe.send(r)
                 if self.debug:
                     print_error("-->", r)
@@ -265,9 +258,9 @@ class TcpInterface(threading.Thread):
 
     def parse_proxy_options(self, s):
         if type(s) == type({}): return s  # fixme: type should be fixed
-        if type(s) != type(""): return None  
+        if type(s) != type(""): return None
         if s.lower() == 'none': return None
-        proxy = { "mode":"socks5", "host":"localhost" }
+        proxy = {"mode": "socks5", "host": "localhost"}
         args = s.split(':')
         n = 0
         if proxy_modes.count(args[n]) == 1:
@@ -313,7 +306,7 @@ class TcpInterface(threading.Thread):
                     self.is_connected = False
                     break
                 else:
-                    self.send_request({'method':'server.version', 'params':[ELECTRUM_VERSION, PROTOCOL_VERSION]})
+                    self.send_request({'method': 'server.version', 'params': [ELECTRUM_VERSION, PROTOCOL_VERSION]})
                     self.is_ping = True
                     t = time.time()
             try:
@@ -329,9 +322,8 @@ class TcpInterface(threading.Thread):
         print_error("closing connection:", self.server)
 
     def change_status(self):
-        # print_error( "change status", self.server, self.is_connected)
+        # print_error("change status", self.server, self.is_connected)
         self.response_queue.put((self, None))
-
 
 
 class HttpInterface(TcpInterface):
@@ -339,17 +331,17 @@ class HttpInterface(TcpInterface):
     def run(self):
         self.start_http()
         if self.is_connected:
-            self.send_request({'method':'server.version', 'params':[ELECTRUM_VERSION, PROTOCOL_VERSION]})
+            self.send_request({'method': 'server.version', 'params': [ELECTRUM_VERSION, PROTOCOL_VERSION]})
             self.change_status()
             self.run_http()
         self.change_status()
 
     def send_request(self, request, queue=None):
         import urllib2, json, time, cookielib
-        print_error( "send_http", messages )
+        # print_error("send_http", request)
         
         if self.proxy:
-            socks.setdefaultproxy(self.proxy_mode, self.proxy["host"], int(self.proxy["port"]) )
+            socks.setdefaultproxy(self.proxy_mode, self.proxy["host"], int(self.proxy["port"]))
             socks.wrapmodule(urllib2)
 
         cj = cookielib.CookieJar()
@@ -360,11 +352,14 @@ class HttpInterface(TcpInterface):
 
         data = []
         ids = []
-        for m in messages:
-            method, params = m
+
+        if request:
+            _id = request.get('id')
+            method = request.get('method')
+            params = request.get('params')
             if type(params) != type([]): params = [params]
-            data.append( { 'method':method, 'id':self.message_id, 'params':params } )
-            self.unanswered_requests[self.message_id] = method, params, callback
+            data.append({'method': method, 'id': self.message_id, 'params': params})
+            self.unanswered_requests[self.message_id] = method, params, _id, queue
             ids.append(self.message_id)
             self.message_id += 1
 
@@ -374,10 +369,9 @@ class HttpInterface(TcpInterface):
             # poll with GET
             data_json = None 
 
-            
         headers = {'content-type': 'application/json'}
         if self.session_id:
-            headers['cookie'] = 'SESSION=%s'%self.session_id
+            headers['cookie'] = 'SESSION=%s' % self.session_id
 
         try:
             req = urllib2.Request(self.connection_msg, data_json, headers)
@@ -386,13 +380,14 @@ class HttpInterface(TcpInterface):
             return
 
         for index, cookie in enumerate(cj):
-            if cookie.name=='SESSION':
+            if cookie.name == 'SESSION':
                 self.session_id = cookie.value
 
         response = response_stream.read()
         self.bytes_received += len(response)
         if response: 
-            response = json.loads( response )
+            response = json.loads(response)
+            # print_error(response)
             if type(response) is not type([]):
                 self.process_response(response)
             else:
@@ -409,7 +404,7 @@ class HttpInterface(TcpInterface):
         return ids
 
     def poll(self):
-        self.send([], None)
+        self.send_request({}, None)
 
     def start_http(self):
         self.rtime = 0
@@ -418,22 +413,24 @@ class HttpInterface(TcpInterface):
 
         self.session_id = None
         self.is_connected = True
-        self.connection_msg = ('https' if self.use_ssl else 'http') + '://%s:%d'%( self.host, self.port )
+        self.connection_msg = ('https' if self.use_ssl else 'http') + '://%s:%d' % (self.host, self.port)
         try:
             self.poll()
-        except Exception:
+        except Exception as e:
             print_error("http init session failed")
+            print_error(str(e))
             self.is_connected = False
             return
 
         if self.session_id:
-            print_error('http session:',self.session_id)
+            print_error('http session:', self.session_id)
             self.is_connected = True
         else:
             self.is_connected = False
 
     def run_http(self):
         self.is_connected = True
+
         while self.is_connected:
             try:
                 if self.session_id:
@@ -448,10 +445,7 @@ class HttpInterface(TcpInterface):
                 break
             
         self.is_connected = False
-
-
-
-
+        self.change_status()
 
 
 def check_cert(host, cert):
