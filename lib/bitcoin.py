@@ -32,8 +32,8 @@ from .util import print_error
 ################################## transactions
 
 DUST_THRESHOLD = 1000000
-MIN_RELAY_TX_FEE = 1000000
-RECOMMENDED_FEE = 1000000
+MIN_RELAY_TX_FEE = 100000
+RECOMMENDED_FEE = 100000
 COINBASE_MATURITY = 30
 
 # AES encryption

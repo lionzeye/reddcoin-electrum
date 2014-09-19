@@ -9,7 +9,6 @@ import platform
 import imp
 
 
-version = imp.load_source('version', 'lib/version.py')
 util = imp.load_source('version', 'lib/util.py')
 
 if sys.version_info[:3] < (2, 6, 0):
@@ -57,8 +56,8 @@ for lang in os.listdir('data/wordlist'):
     data_files.append((os.path.join(appdata_dir, 'wordlist'), ['data/wordlist/%s' % lang]))
 
 setup(
-    name="reddcoin electrum",
-    version=version.ELECTRUM_VERSION,
+    name="reddcoin_electrum",
+    version='1.0',
     install_requires=['ecdsa>=0.9', 'pbkdf2', 'requests', 'pyasn1', 'pyasn1-modules',
                       'qrcode', 'tlslite>=0.4.5', 'numpy', 'SocksiPy-branch'],
     packages=['electrum', 'electrum_gui', 'electrum_gui.qt', 'electrum_plugins'],
@@ -73,6 +72,8 @@ setup(
     description="Reddcoin Electrum Wallet",
     author="Thomas Voegtlin, Larry Ren",
     author_email="thomasv1@gmx.de, ren@reddcoin.com",
+    maintainer="Larry Ren",
+    maintainer_email="ren@reddcoin.com",
     license="GNU GPLv3",
     url="https://wallet.reddcoin.com",
     long_description="Reddcoin Electrum Wallet",
