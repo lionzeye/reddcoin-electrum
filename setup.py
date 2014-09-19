@@ -59,9 +59,9 @@ for lang in os.listdir('data/wordlist'):
 setup(
     name="reddcoin electrum",
     version=version.ELECTRUM_VERSION,
-    install_requires=['ecdsa>=0.9', 'pbkdf2', 'requests', 'pyasn1', 'pyasn1-modules', 'qrcode', 'numpy'],
-    packages=['electrum', 'electrum_gui', 'electrum_gui.qt', 'electrum_plugins',
-              'electrum.tlslite', 'electrum.tlslite.utils', 'electrum.tlslite.integration'],
+    install_requires=['ecdsa>=0.9', 'pbkdf2', 'requests', 'pyasn1', 'pyasn1-modules',
+                      'qrcode', 'tlslite>=0.4.5', 'numpy', 'SocksiPy-branch'],
+    packages=['electrum', 'electrum_gui', 'electrum_gui.qt', 'electrum_plugins'],
     package_dir={
         'electrum': 'lib',
         'electrum_gui': 'gui',

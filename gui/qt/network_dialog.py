@@ -24,11 +24,11 @@ import os.path, json, ast, traceback
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from electrum import DEFAULT_SERVERS, DEFAULT_PORTS
-
 from .util import *
 
 protocol_names = ['TCP', 'HTTP', 'SSL', 'HTTPS']
 protocol_letters = 'thsg'
+
 
 class NetworkDialog(QDialog):
     def __init__(self, network, config, parent):

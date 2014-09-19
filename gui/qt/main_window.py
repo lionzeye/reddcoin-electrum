@@ -188,6 +188,7 @@ class ElectrumWindow(QMainWindow):
         self.wallet = None
         self.payment_request = None
         self.qr_window = None
+        self.not_enough_funds = False
 
     def update_account_selector(self):
         # account selector
@@ -732,10 +733,10 @@ class ElectrumWindow(QMainWindow):
         self.receive_message_e.setText(message)
         self.receive_amount_e.setAmount(amount)
 
-
     def receive_list_delete(self, item):
         addr = str(item.text(0))
         self.receive_requests.pop(addr)
+        self.wallet.storage.put('receive_requests', self.receive_requests)
         self.update_receive_tab()
         self.clear_receive_tab()
 
@@ -917,7 +918,7 @@ class ElectrumWindow(QMainWindow):
             output = ('address', addr, sendable)
             dummy_tx = Transaction(inputs, [output])
             fee = self.wallet.estimated_fee(dummy_tx)
-            self.amount_e.setAmount(sendable-fee)
+            self.amount_e.setAmount(max(0, sendable-fee))
             self.amount_e.textEdited.emit("")
             self.fee_e.setAmount(fee)
 
@@ -2129,7 +2130,12 @@ class ElectrumWindow(QMainWindow):
 
 
     def read_tx_from_qrcode(self):
-        data = run_hook('scan_qr_hook')
+        from electrum import qrscanner
+        try:
+            data = qrscanner.scan_qr(self.config)
+        except BaseException, e:
+            QMessageBox.warning(self, _('Error'), _(e), _('OK'))
+            return
         if not data:
             return
         # transactions are binary, but qrcode seems to return utf8...
@@ -2645,10 +2651,9 @@ class ElectrumWindow(QMainWindow):
         if self.need_restart:
             QMessageBox.warning(self, _('Success'), _('Please restart Reddcoin Electrum to activate the new GUI settings'), _('OK'))
 
-
-
     def run_network_dialog(self):
         if not self.network:
+            QMessageBox.warning(self, _('Offline'), _('You are in offline mode.\nRestart wallet if you want to get connected.'), _('OK'))
             return
         NetworkDialog(self.wallet.network, self.config, self).do_exec()
 
@@ -2661,7 +2666,6 @@ class ElectrumWindow(QMainWindow):
         self.config.set_key("console-history", self.console.history[-50:], True)
         self.wallet.storage.put('accounts_expanded', self.accounts_expanded)
         event.accept()
-
 
     def plugins_dialog(self):
         from electrum.plugins import plugins

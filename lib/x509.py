@@ -19,6 +19,10 @@
 
 from datetime import datetime
 import sys
+import tlslite
+# workaround https://github.com/trevp/tlslite/issues/15
+tlslite.utils.cryptomath.pycryptoLoaded = False
+
 import pyasn1
 import pyasn1_modules
 from pyasn1.codec.der import decoder, encoder
@@ -32,9 +36,6 @@ from pyasn1_modules.rfc2459 import id_ce_subjectAltName as SUBJECT_ALT_NAME
 from pyasn1_modules.rfc2459 import id_at_commonName as COMMON_NAME
 from pyasn1_modules.rfc2459 import id_at_organizationalUnitName as OU_NAME
 from pyasn1_modules.rfc2459 import id_ce_basicConstraints, BasicConstraints
-
-# local copy
-import tlslite
 
 XMPP_ADDR = ObjectIdentifier('1.3.6.1.5.5.7.8.5')
 SRV_NAME = ObjectIdentifier('1.3.6.1.5.5.7.8.7')
