@@ -64,9 +64,10 @@ def read_file(filename):
         f.close()
 
 
+VERSION = '1.0.0'
 setup(
     name="reddcoin-electrum",
-    version='1.0.0',
+    version=VERSION,
     install_requires=['ecdsa>=0.9', 'pbkdf2', 'requests', 'pyasn1', 'pyasn1-modules',
                       'qrcode', 'tlslite>=0.4.5', 'numpy', 'SocksiPy-branch'],
     packages=['electrum', 'electrum_gui', 'electrum_gui.qt', 'electrum_plugins'],
@@ -85,8 +86,9 @@ setup(
     maintainer_email="ren@reddcoin.com",
     license="GNU GPLv3",
     url="https://wallet.reddcoin.com",
+    download_url="https://pypi.python.org/packages/source/l/reddcoin-electrum/reddcoin-electrum-%s.tar.gz" % VERSION,
     long_description=read_file('README.rst'),
-    platform="All",
+    platforms="All",
     classifiers=[
         'Environment :: Console',
         'Environment :: X11 Applications :: Qt',
