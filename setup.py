@@ -9,8 +9,6 @@ import platform
 import imp
 
 
-util = imp.load_source('version', 'lib/util.py')
-
 if sys.version_info[:3] < (2, 6, 0):
     sys.exit("Error: Reddcoin Electrum requires Python version >= 2.6.0...")
 
@@ -31,7 +29,7 @@ if (len(sys.argv) > 1 and (sys.argv[1] == "sdist")) or (platform.system() != 'Wi
         if os.path.exists('locale/%s/LC_MESSAGES/electrum.mo' % lang):
             data_files.append((os.path.join(usr_share, 'locale/%s/LC_MESSAGES' % lang), ['locale/%s/LC_MESSAGES/electrum.mo' % lang]))
 
-
+util = imp.load_source('util', 'lib/util.py')
 appdata_dir = util.appdata_dir()
 if not os.access(appdata_dir, os.W_OK):
     appdata_dir = os.path.join(usr_share, "reddcoin-electrum")
@@ -55,9 +53,20 @@ data_files += [
 for lang in os.listdir('data/wordlist'):
     data_files.append((os.path.join(appdata_dir, 'wordlist'), ['data/wordlist/%s' % lang]))
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+
+def read_file(filename):
+    f = open(os.path.join(basedir, filename))
+    try:
+        return f.read()
+    finally:
+        f.close()
+
+
 setup(
-    name="reddcoin_electrum",
-    version='1.0',
+    name="reddcoin-electrum",
+    version='1.0.0',
     install_requires=['ecdsa>=0.9', 'pbkdf2', 'requests', 'pyasn1', 'pyasn1-modules',
                       'qrcode', 'tlslite>=0.4.5', 'numpy', 'SocksiPy-branch'],
     packages=['electrum', 'electrum_gui', 'electrum_gui.qt', 'electrum_plugins'],
@@ -69,13 +78,26 @@ setup(
     scripts=['reddcoin-electrum'],
     include_package_data=True,
     data_files=data_files,
-    description="Reddcoin Electrum Wallet",
+    description="Reddcoin Electrum wallets for desktop",
     author="Thomas Voegtlin, Larry Ren",
     author_email="thomasv1@gmx.de, ren@reddcoin.com",
     maintainer="Larry Ren",
     maintainer_email="ren@reddcoin.com",
     license="GNU GPLv3",
     url="https://wallet.reddcoin.com",
-    long_description="Reddcoin Electrum Wallet",
+    long_description=read_file('README.rst'),
     platform="All",
+    classifiers=[
+        'Environment :: Console',
+        'Environment :: X11 Applications :: Qt',
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: End Users/Desktop',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3',
+        'Operating System :: OS Independent',
+        'Topic :: Office/Business :: Financial',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+    ],
 )

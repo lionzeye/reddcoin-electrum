@@ -61,8 +61,7 @@ Install dependencies
 
 ::
 
-    pip install --pre slowaes
-    pip install ecdsa pbkdf2 requests pyasn1 pyasn1-modules qrcode tlslite numpy
+    pip install ecdsa pbkdf2 requests pyasn1 pyasn1-modules qrcode tlslite numpy SocksiPy-branch
 
 PyQt4 is not available from pip and it is a PITA to build yourself
 anyway, install it through your distribution and link it into the
