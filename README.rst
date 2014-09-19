@@ -27,7 +27,7 @@ install python-setuptools and run setup.py again
 
 ::
 
-    sudo apt-get install python-setuptools
+    sudo apt-get install python-setuptools python-dev
     sudo python setup.py install
 
 Then you can run it from any directory:

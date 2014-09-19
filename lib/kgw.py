@@ -246,6 +246,8 @@ class KGW(object):
 
             past_rate_actual_seconds = np.maximum(0.0, np.cumsum(past_rate_actual_gaps))
             past_rate_target_seconds = 60 * past_blocks_mass_range
+            zero_idx = (past_rate_actual_seconds == 0)
+            past_rate_actual_seconds[zero_idx] = past_rate_target_seconds[zero_idx]
             past_rate_adjustment_ratio = past_rate_target_seconds / past_rate_actual_seconds
             past_rate_adjustment_ratio[0] = 1.0
 
