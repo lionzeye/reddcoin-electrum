@@ -100,8 +100,7 @@ On Linux:
 
 ::
 
-    export VERSION=2.0.0
-    pip install git+https://github.com/reddcoin-project/reddcoin-electrum.git@v$VERSION
+    python setup.py sdist --format=gztar
 
 On Windows:
 
