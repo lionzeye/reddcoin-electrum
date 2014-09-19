@@ -393,14 +393,20 @@ class HttpInterface(TcpInterface):
 
         response = response_stream.read()
         self.bytes_received += len(response)
-        if response: 
-            response = json.loads(response)
-            # print_error(response)
-            if type(response) is not type([]):
-                self.process_response(response)
+        if response:
+            try:
+                response = json.loads(response)
+                # print_error(response)
+            except Exception as e:
+                print_error(str(e))
+                response = None
             else:
-                for item in response:
-                    self.process_response(item)
+                if type(response) is not type([]):
+                    self.process_response(response)
+                else:
+                    for item in response:
+                        self.process_response(item)
+
         if response: 
             self.poll_interval = 1
         else:
