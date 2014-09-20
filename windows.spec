@@ -41,3 +41,10 @@ exe = EXE(pyz,
           strip=None,
           upx=True,
           console=False , icon='icons\\electrum.ico')
+coll = COLLECT(exe,
+               a.binaries,
+               a.zipfiles,
+               a.datas,
+               strip=None,
+               upx=True,
+               name='reddcoin-electrum')
