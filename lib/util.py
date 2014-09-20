@@ -60,7 +60,10 @@ def user_dir():
 
 
 def data_dir():
-    return appdata_dir()
+    if '_MEIPASS2' in os.environ and os.environ['_MEIPASS2']:
+        return os.environ['_MEIPASS2']
+    else:
+        return appdata_dir()
 
 
 def appdata_dir():

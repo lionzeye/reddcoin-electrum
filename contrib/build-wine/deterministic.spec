@@ -16,8 +16,8 @@ a = Analysis([home+'reddcoin-electrum',
              pathex=['lib:gui:plugins'],
              hookspath=None)
 
-##### include mydir in distribution #######
-def extra_datas(mydir):
+##### include folder in distribution #######
+def extra_data(folder):
     def rec_glob(p, files):
         import os
         import glob
@@ -26,26 +26,26 @@ def extra_datas(mydir):
                 files.append(d)
             rec_glob("%s/*" % d, files)
     files = []
-    rec_glob("%s/*" % mydir, files)
-    extra_datas = []
+    rec_glob("%s/*" % folder, files)
+    extra_data = []
     for f in files:
-        extra_datas.append((f, f, 'DATA'))
+        extra_data.append((f, f, 'DATA'))
 
-    return extra_datas
+    return extra_data
 ###########################################
 
 # append dirs
 
 # Theme data
-a.datas += extra_datas('data')
+a.datas += extra_data('data')
 
 # Localization
-a.datas += extra_datas('locale')
+a.datas += extra_data('locale')
 
 # Py folders that are needed because of the magic import finding
-a.datas += extra_datas('gui')
-a.datas += extra_datas('lib')
-a.datas += extra_datas('plugins')
+a.datas += extra_data('gui')
+a.datas += extra_data('lib')
+a.datas += extra_data('plugins')
 
 pyz = PYZ(a.pure)
 exe = EXE(pyz,
