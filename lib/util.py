@@ -63,7 +63,7 @@ def data_dir():
     if '_MEIPASS2' in os.environ and os.environ['_MEIPASS2']:
         return os.environ['_MEIPASS2']
     elif hasattr(sys, '_MEIPASS'):
-        return sys._MEIPASS
+        return os.path.join(sys._MEIPASS, 'data')
     else:
         return appdata_dir()
 
