@@ -46,12 +46,12 @@ def print_json(obj):
 
 
 def user_dir():
-    if "HOME" in os.environ:
-        return os.path.join(os.environ["HOME"], ".reddcoin-electrum")
-    elif "APPDATA" in os.environ:
+    if "APPDATA" in os.environ:
         return os.path.join(os.environ["APPDATA"], "Reddcoin-Electrum")
     elif "LOCALAPPDATA" in os.environ:
         return os.path.join(os.environ["LOCALAPPDATA"], "Reddcoin-Electrum")
+    elif "HOME" in os.environ:
+        return os.path.join(os.environ["HOME"], ".reddcoin-electrum")
     elif 'ANDROID_DATA' in os.environ:
         return "/sdcard/electrum/"
     else:
