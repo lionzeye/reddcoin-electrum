@@ -33,6 +33,7 @@ import struct
 import StringIO
 import mmap
 import random
+import calendar
 from datetime import datetime
 
 NO_SIGNATURE = 'ff'
@@ -513,7 +514,7 @@ class Transaction:
         self.inputs = inputs
         self.outputs = outputs
         self.locktime = locktime
-        self.time = int(datetime.utcnow().strftime("%s"))
+        self.time = calendar.timegm(datetime.utcnow().utctimetuple())
         self.raw = None
 
     @classmethod
