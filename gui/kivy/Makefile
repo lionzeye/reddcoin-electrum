@@ -10,8 +10,8 @@ apk:
 	@cp tools/buildozer.spec ../../buildozer.spec
 	# get aes.py
 	@cd ../..; curl -O -L https://raw.github.com/devrandom/slowaes/master/python/aes.py
-	# rename electrum to main.py
-	@mv ../../electrum ../../main.py
+	# rename reddcoin-electrum to main.py
+	@mv ../../reddcoin-electrum ../../main.py
 	@-if [ ! -d "../../.buildozer" ];then \
 		cd ../..; buildozer android debug;\
 		cp -f gui/kivy/tools/blacklist.txt .buildozer/android/platform/python-for-android/src/blacklist.txt;\
@@ -23,7 +23,7 @@ clean:
 	# Cleaning up
 	# remove aes
 	@-rm ../../aes.py
-	# rename main.py to electrum
-	@-mv ../../main.py ../../electrum
+	# rename main.py to reddcoin-electrum
+	@-mv ../../main.py ../../reddcoin-electrum
 	# remove buildozer.spec
 	@-rm ../../buildozer.spec
