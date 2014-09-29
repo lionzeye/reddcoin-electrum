@@ -162,12 +162,12 @@
     min_fee: app.format_amount(app.wallet.fee)
     title:
         '[size=9dp] \n[/size]Transaction Fee[size=9dp]\n'\
-        '[color=#ADAEAE]Minimum is BTC {}[/color][/size]'.format(self.min_fee)
+        '[color=#ADAEAE]Minimum is RDD {}[/color][/size]'.format(self.min_fee)
     title_size: '24sp'
     on_activate:
         ti_fee.focus = True
         if self.return_obj:\
-        ti_fee.text =  "BTC " + self.return_obj.amt
+        ti_fee.text =  "RDD " + self.return_obj.amt
     on_deactivate: ti_fee.focus = False
     on_release:
         if self.return_obj and ti_fee.text:\
@@ -184,7 +184,7 @@
         multiline: False
         on_text_validate: root.dispatch('on_release', self)
         pos_hint: {'center_y': .7}
-        text: "BTC " + root.min_fee
+        text: "RDD " + root.min_fee
         input_type: 'number'
 
 
@@ -243,7 +243,7 @@
                         font_size: '22sp'
                         text:
                             u'[font={fnt}]{smbl}[/font]'.\
-                            format(smbl=btc_symbol if app.base_unit == 'BTC' else mbtc_symbol, fnt=font_light)
+                            format(smbl=btc_symbol if app.base_unit == 'RDD' else mbtc_symbol, fnt=font_light)
                         size_hint_x: .25
                     ELTextInput:
                         id: amount_e
@@ -543,7 +543,7 @@
                         font_size: '22sp'
                         text:
                             u'[font={fnt}]{smbl}[/font]'.\
-                            format(smbl=btc_symbol if app.base_unit == 'BTC' else mbtc_symbol, fnt=font_light)
+                            format(smbl=btc_symbol if app.base_unit == 'RDD' else mbtc_symbol, fnt=font_light)
                         size_hint_x: .25
                     ELTextInput:
                         id: amount_e
@@ -1109,7 +1109,7 @@
         u'[size={sz}sp][color={clr}]'.format(sz=25.7 if self.width > dp(300) else 22, clr=root.header_color) + \
         _(u'You ') + (_(u'sent') if self.is_mine else _(u'received')) + u'[/color]'\
         '[color={clr}] [font={fnt}]{smbl}[/font]{amt}[/color][/size]\n'.format(\
-        clr=root.amount_color, smbl=btc_symbol if app.base_unit == 'BTC' else mbtc_symbol, fnt=font_light, amt=root.amount[:9]) + \
+        clr=root.amount_color, smbl=btc_symbol if app.base_unit == 'RDD' else mbtc_symbol, fnt=font_light, amt=root.amount[:9]) + \
         _(u'About ') + root.quote_text + _(u' at transaction time') + \
         u'[size={}dp] \n[/size]'.format(5 if self.width > dp(300) else 1)
     size_hint: None, None
@@ -1442,7 +1442,7 @@
                 u'[color=#B2B3B3][size=12sp]{qt}[/size]'\
                 u'[/color]'.format(amount_color=root.amount_color,\
                 amount=root.amount[1:], qt=root.quote_text, sign=root.amount[0],\
-                symbol=btc_symbol if app.base_unit == 'BTC' else mbtc_symbol)
+                symbol=btc_symbol if app.base_unit == 'RDD' else mbtc_symbol)
     CardSeparator
 
 <CardRecentActivity@Card>
@@ -1510,7 +1510,7 @@
             text:
                 u'[color=#4E4F4F]{}{}[/color]'\
                 .format('' if not self.balance_in_numbers else\
-                (btc_symbol if app.base_unit == 'BTC' else mbtc_symbol), root.status)
+                (btc_symbol if app.base_unit == 'RDD' else mbtc_symbol), root.status)
         BoxLayout
             pos_hint: {'y': 0, 'right': 1}
             spacing: '5dp'
