@@ -37,7 +37,7 @@ class InstallWizard(Widget):
         self.storage = storage
 
     def waiting_dialog(self, task,
-                       msg= _("Electrum is generating your addresses,"
+                       msg= _("Reddcoin Electrum is generating your addresses,"
                               " please wait."),
                        on_complete=None):
         '''Perform a blocking task in the background by running the passed
