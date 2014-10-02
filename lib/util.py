@@ -79,6 +79,15 @@ def appdata_dir():
           platform.system() == "FreeBSD" or
           platform.system() == "NetBSD"):
         return os.path.join("/usr/share", "reddcoin-electrum")
+    elif 'ANDROID_DATA' in os.environ:
+        try:
+            import jnius
+            env  = jnius.autoclass('android.os.Environment')
+            _dir =  env.getExternalStorageDirectory().getPath()
+            return _dir + '/reddcoin-electrum/'
+        except ImportError:
+            pass
+        return "/sdcard/reddcoin-electrum/"
     else:
         raise Exception("Unknown Operating System")
 
