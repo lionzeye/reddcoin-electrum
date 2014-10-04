@@ -15,7 +15,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
-
+import sys
+sys.platform = 'linux2'
 from decimal import Decimal
 import json
 import optparse
@@ -26,13 +27,26 @@ import sys
 import time
 import traceback
 
-from electrum import util
+is_local = os.path.dirname(os.path.realpath(__file__)) == os.getcwd()
+is_android = 'ANDROID_DATA' in os.environ
+
+import __builtin__
+__builtin__.use_local_modules = is_local or is_android
+
+# load local module as electrum
+if __builtin__.use_local_modules:
+    import imp
+    imp.load_module('electrum', *imp.find_module('lib'))
+    imp.load_module('electrum_gui', *imp.find_module('gui'))
+
+if is_local:
+    sys.path.append('packages')
+
+
 from electrum import SimpleConfig, Network, Wallet, WalletStorage, NetworkProxy, Commands, known_commands, pick_random_server
 from electrum.util import print_msg, print_stderr, print_json, set_verbosity
 from electrum.daemon import get_daemon
 from electrum.plugins import init_plugins
-from electrum_gui.qt import main_window
-
 
 # get password routine
 def prompt_password(prompt, confirm=True):
@@ -173,7 +187,7 @@ if __name__ == '__main__':
         cmd = args[0]
 
     if cmd == 'gui':
-        init_plugins(config)
+        #init_plugins(config)
         gui_name = config.get('gui', 'classic')
         if gui_name in ['lite', 'classic']:
             gui_name = 'qt'
