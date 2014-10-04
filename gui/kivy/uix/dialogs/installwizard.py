@@ -73,7 +73,6 @@ class InstallWizard(Widget):
     def is_any(self, seed_e):
         text = self.get_seed_text(seed_e)
         return (Wallet.is_seed(text) or
-                Wallet.is_mpk(text) or
                 Wallet.is_address(text) or
                 Wallet.is_private_key(text))
 
@@ -248,7 +247,7 @@ class InstallWizard(Widget):
                 "[color=#929292]If you ever forget your pincode, your seed" +\
                 " phrase will be the [color=#EB984E]"+\
                 "[b]only way to recover[/b][/color] your wallet. Your " +\
-                " [color=#EB984E][b]Bitcoins[/b][/color] will otherwise be" +\
+                " [color=#EB984E][b]Reddcoins[/b][/color] will otherwise be" +\
                 " [color=#EB984E][b]lost forever![/b][/color]")
 
         if wallet.imported_keys:
