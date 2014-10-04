@@ -53,7 +53,7 @@ def user_dir():
     elif "HOME" in os.environ:
         return os.path.join(os.environ["HOME"], ".reddcoin-electrum")
     elif 'ANDROID_DATA' in os.environ:
-        return "/sdcard/electrum/"
+        return "/sdcard/reddcoin-electrum/"
     else:
         #raise Exception("No home directory found in environment variables.")
         return
@@ -72,13 +72,6 @@ def appdata_dir():
     """Find the path to the application data directory; add an electrum folder and return path."""
     if platform.system() == "Windows":
         return os.path.join(os.environ["APPDATA"], "Reddcoin-Electrum")
-    elif (platform.system() == "Linux" or
-          platform.system() == "Darwin" or
-          platform.system() == "DragonFly" or
-          platform.system() == "OpenBSD" or
-          platform.system() == "FreeBSD" or
-          platform.system() == "NetBSD"):
-        return os.path.join("/usr/share", "reddcoin-electrum")
     elif 'ANDROID_DATA' in os.environ:
         try:
             import jnius
@@ -88,6 +81,13 @@ def appdata_dir():
         except ImportError:
             pass
         return "/sdcard/reddcoin-electrum/"
+    elif (platform.system() == "Linux" or
+          platform.system() == "Darwin" or
+          platform.system() == "DragonFly" or
+          platform.system() == "OpenBSD" or
+          platform.system() == "FreeBSD" or
+          platform.system() == "NetBSD"):
+        return os.path.join("/usr/share", "reddcoin-electrum")
     else:
         raise Exception("Unknown Operating System")
 
