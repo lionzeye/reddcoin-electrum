@@ -1,13 +1,13 @@
 [app]
 
 # (str) Title of your application
-title = ReddcoinElectrum
+title = Reddcoin Electrum
 
 # (str) Package name
 package.name = kivy
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = com.reddcoin.electrum.kivy
+package.domain = com.reddcoin.electrum
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -32,7 +32,7 @@ source.exclude_exts = spec
 version = 1.9.8
 
 # (list) Application requirements
-requirements = tlslite, openssl, pyopenssl, pil, qrcode, ecdsa, pbkdf2, pyasn1, pyasn1-modules,  plyer==master, kivy==master
+requirements = SocksiPy-branch, numpy, requests, tlslite, openssl, pyopenssl, pil, qrcode, ecdsa, pbkdf2, pyasn1, pyasn1-modules,  plyer==master, kivy==master
 
 # (str) Presplash of the application
 presplash.filename = %(source.dir)s/gui/kivy/theming/splash.png
