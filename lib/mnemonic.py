@@ -105,6 +105,8 @@ class Mnemonic(object):
         print_error('language', lang)
         filename = filenames.get(lang[0:2], 'english.txt')
         path = os.path.join(util.data_dir(), 'wordlist', filename)
+        if 'ANDROID_DATA' in os.environ:
+            path = os.path.join(os.path.realpath(__file__).replace('lib/mnemonic.pyo', ''), 'data/', 'wordlist', filename)
         s = open(path,'r').read().strip()
         s = unicodedata.normalize('NFKD', s.decode('utf8'))
         lines = s.split('\n')
